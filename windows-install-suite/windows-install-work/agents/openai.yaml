@@ -1,0 +1,7 @@
+interface:
+  display_name: "Windows 工作安装"
+  short_description: "安装沟通、邮箱和远程工作工具"
+  default_prompt: "Use $windows-install-work to install or verify my Windows work apps."
+
+policy:
+  allow_implicit_invocation: true

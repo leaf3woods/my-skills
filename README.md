@@ -10,6 +10,11 @@
 | --- | --- | --- |
 | `git-commit` | 分析当前 git diff，按 Conventional Commits 生成提交信息并执行提交 | 用户要求提交代码、创建 commit，或使用 `/commit` |
 | `developer-self-test-report` | 根据分支、提交、变更文件和需求信息生成英文开发自测报告 | 需要给 QA 或测试同事交付 developer self-test report |
+| `windows-install` | Windows 软件安装总控，负责安装单个软件、选择模块、协调依赖和排序，再交给子模块执行 | 用户想安装某个软件、补装部分模块，或在重装后一次性安装 basic/work/development/drivers |
+| `windows-install-basic` | 安装或核对字体、本地安装包、Typora、Obsidian 和基础应用 | 安装 Typora/Obsidian/字体/基础工具，不包含驱动/固件和微软自带应用 |
+| `windows-install-drivers` | 审计或安装缺失/异常的 OEM、固件、芯片组、显卡、网卡、声卡、存储和显示器驱动 | 设备管理器异常、Dell/OEM 电脑需要驱动扫描，或用户明确要求检查驱动；默认不更新正常驱动 |
+| `windows-install-work` | 安装或核对沟通、邮箱和远程工作工具 | 安装钉钉、微信、Slack、邮箱、Termius 等工作软件 |
+| `windows-install-development` | 安装或核对开发工具链、IDE、Windows Terminal、Oh My Posh、npm 全局包和 Visual Studio 扩展 | 安装 Git、GitHub CLI、AWS CLI、VS Code、Cursor、DBeaver、Bruno、WSL 等开发环境；VS Code 扩展走同步，Visual Studio package 不由 skill 安装 |
 
 ## 目录结构
 
@@ -19,10 +24,28 @@
 │   └── SKILL.md
 ├── git-commit/
 │   └── SKILL.md
+├── windows-install-suite/
+│   ├── windows-install/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── windows-install-basic/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── windows-install-drivers/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   ├── windows-install-work/
+│   │   ├── SKILL.md
+│   │   └── references/
+│   └── windows-install-development/
+│       ├── SKILL.md
+│       └── references/
 └── README.md
 ```
 
 每个 skill 以独立目录保存，目录名与 `SKILL.md` frontmatter 中的 `name` 保持一致。
+
+`windows-install-suite/` 是仓库内的分组目录，不是单独 skill。启用时仍然要把其中每个 `windows-install*` 子目录分别复制或链接到 Codex skills 目录，让它们可以单独触发。
 
 ## 使用方式
 
@@ -43,6 +66,19 @@ New-Item -ItemType Junction -Path "$skillsHome\git-commit" -Target "$PWD\git-com
 New-Item -ItemType Junction -Path "$skillsHome\developer-self-test-report" -Target "$PWD\developer-self-test-report"
 ```
 
+按需启用 Windows 安装类 skill：
+
+```powershell
+$skillsHome = "$env:USERPROFILE\.codex\skills"
+$suite = Join-Path $PWD "windows-install-suite"
+New-Item -ItemType Directory -Force -Path $skillsHome
+New-Item -ItemType Junction -Path "$skillsHome\windows-install" -Target "$suite\windows-install"
+New-Item -ItemType Junction -Path "$skillsHome\windows-install-basic" -Target "$suite\windows-install-basic"
+New-Item -ItemType Junction -Path "$skillsHome\windows-install-drivers" -Target "$suite\windows-install-drivers"
+New-Item -ItemType Junction -Path "$skillsHome\windows-install-work" -Target "$suite\windows-install-work"
+New-Item -ItemType Junction -Path "$skillsHome\windows-install-development" -Target "$suite\windows-install-development"
+```
+
 安装后，在 Codex 中用自然语言描述任务即可触发对应 skill。例如：
 
 ```text
@@ -51,6 +87,22 @@ New-Item -ItemType Junction -Path "$skillsHome\developer-self-test-report" -Targ
 
 ```text
 根据当前分支生成 developer self-test report
+```
+
+```text
+用 windows-install 安装 Typora
+```
+
+```text
+用 windows-install 帮我选择模块并安装这台 Windows 电脑需要的软件
+```
+
+```text
+用 windows-install-drivers 帮我单独检查驱动和固件
+```
+
+```text
+用 windows-install-development 帮我安装开发环境
 ```
 
 ## Skill 编写约定
