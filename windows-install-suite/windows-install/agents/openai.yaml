@@ -1,0 +1,7 @@
+interface:
+  display_name: "Windows 安装总控"
+  short_description: "安装单个软件或协调模块顺序"
+  default_prompt: "Use $windows-install to install selected Windows apps or coordinate module-based setup."
+
+policy:
+  allow_implicit_invocation: true

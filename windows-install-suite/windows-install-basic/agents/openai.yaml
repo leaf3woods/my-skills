@@ -1,0 +1,7 @@
+interface:
+  display_name: "Windows 基础安装"
+  short_description: "安装字体、本地安装包和基础应用"
+  default_prompt: "Use $windows-install-basic to install or verify fonts, Typora, Obsidian, and baseline apps."
+
+policy:
+  allow_implicit_invocation: true

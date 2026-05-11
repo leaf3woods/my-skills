@@ -1,0 +1,7 @@
+interface:
+  display_name: "Windows 开发安装"
+  short_description: "安装 CLI、IDE、OMP 和 VS 扩展"
+  default_prompt: "Use $windows-install-development to install or verify my Windows development tools."
+
+policy:
+  allow_implicit_invocation: true

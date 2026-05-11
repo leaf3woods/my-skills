@@ -1,0 +1,7 @@
+安装后Win+R输入regedit打开注册表编辑器
+
+打开：计算机\HKEY_CURRENT_USER\SOFTWARE\Typora
+
+右键Typora，选择权限
+
+将所有用户都勾选为拒绝即可
