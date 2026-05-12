@@ -155,13 +155,17 @@ Install Miniconda3 from `Anaconda.Miniconda3`.
 
 Use Miniconda as the Python provider. Do not install standalone CPython, Microsoft Store Python, or a separate Conda distribution from this skill. Keep Miniconda base auto-activation disabled globally unless the user asks otherwise. Windows Terminal AI profiles should explicitly activate the selected Conda environment, defaulting to `base`, before launching each AI CLI.
 
+Install `pyyaml` in the base environment because AI CLIs rely on Python YAML parsing. The Conda package name is `pyyaml`; the Python import is `yaml`. If AI CLI profiles use a non-base Conda environment, verify and install `pyyaml` in that environment too.
+
 Validation should confirm Miniconda-managed Python:
 
 ```powershell
 conda --version
 where.exe conda
 conda info
+conda install -n base -y pyyaml
 conda run -n base python --version
+conda run -n base python -c "import yaml; print(yaml.__version__)"
 ```
 
 If plain `python` resolves only to the WindowsApps alias, report it as an alias and continue using Miniconda through `conda run` or activated environments.

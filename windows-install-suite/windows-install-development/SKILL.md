@@ -85,7 +85,9 @@ Use Miniconda as the Python provider. Do not install standalone CPython, Microso
 conda --version
 conda config --set auto_activate_base false
 conda init powershell
+conda install -n base -y pyyaml
 conda run -n base python --version
+conda run -n base python -c "import yaml; print(yaml.__version__)"
 ```
 
 Rules:
@@ -94,7 +96,9 @@ Rules:
 - Do not install `Python.Python.3.x`, Microsoft Store Python, or the WindowsApps Python alias from this skill.
 - Do not treat Conda as a separate app; use the `conda` command bundled with Miniconda.
 - Keep the base environment from auto-activating globally.
+- Install and verify `pyyaml` in the base environment because AI CLIs depend on Python YAML parsing. The Conda package name is `pyyaml`; the Python import is `yaml`.
 - Windows Terminal AI profiles must explicitly activate the selected Conda Python environment before launching the AI CLI. Use `base` unless the user requests another existing Conda environment.
+- If the user selects a non-base Conda environment for AI CLI profiles, verify `pyyaml` in that environment too and install it there when missing.
 - Use `conda run -n <env> python ...` or `conda activate <env>` for Python commands.
 - If the user requests a specific Python version, create or update a Miniconda environment with that version.
 - If plain `python` resolves only to WindowsApps, report it as a harmless alias and continue using conda-managed Python.
@@ -183,6 +187,7 @@ conda --version
 where.exe conda
 conda info --envs
 conda run -n base python --version
+conda run -n base python -c "import yaml; print(yaml.__version__)"
 wt --version
 node -v
 npm -v
