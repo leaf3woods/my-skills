@@ -1,6 +1,6 @@
 ---
 name: windows-install-development
-description: "Install or verify Windows development tools, including developer CLIs, editors, Windows Terminal, Oh My Posh, npm global packages, Visual Studio user extensions, API/database tools, and coding agent tools. Use for post-reinstall setup or later partial installs. VS Code extensions sync automatically; Visual Studio workloads/packages are not installed by this skill."
+description: "Install or verify Windows development tools, including developer CLIs, Miniconda-managed Python, editors, Windows Terminal, Oh My Posh, npm global packages, Visual Studio user extensions, API/database tools, and coding agent tools. Use for post-reinstall setup or later partial installs. VS Code extensions sync automatically; Visual Studio workloads/packages are not installed by this skill."
 ---
 
 # Windows Development Installation
@@ -54,6 +54,7 @@ $packages = @(
   @{ Id = 'Git.Git'; Name = 'Git' },
   @{ Id = 'GitHub.cli'; Name = 'GitHubCLI' },
   @{ Id = 'Amazon.AWSCLI'; Name = 'AWSCLI' },
+  @{ Id = 'Anaconda.Miniconda3'; Name = 'Miniconda3' },
   @{ Id = 'Microsoft.PowerShell'; Name = 'PowerShell7' },
   @{ Id = 'Microsoft.WindowsTerminal'; Name = 'WindowsTerminal' },
   @{ Id = 'Microsoft.VisualStudioCode'; Name = 'VSCode' },
@@ -75,6 +76,31 @@ winget install --id Microsoft.WSL -e `
   --silent --disable-interactivity `
   --accept-package-agreements --accept-source-agreements
 ```
+
+## Configure Miniconda Python
+
+Use Miniconda as the Python provider. Do not install standalone CPython, Microsoft Store Python, or a separate Conda distribution from this skill.
+
+```powershell
+conda --version
+conda config --set auto_activate_base false
+conda init powershell
+conda run -n base python --version
+```
+
+Rules:
+
+- When the user asks for Python, install or verify Miniconda and use conda environments.
+- Do not install `Python.Python.3.x`, Microsoft Store Python, or the WindowsApps Python alias from this skill.
+- Do not treat Conda as a separate app; use the `conda` command bundled with Miniconda.
+- Keep the base environment from auto-activating by default.
+- Use `conda run -n <env> python ...` or `conda activate <env>` for Python commands.
+- If the user requests a specific Python version, create or update a Miniconda environment with that version.
+- If plain `python` resolves only to WindowsApps, report it as a harmless alias and continue using conda-managed Python.
+
+Restart PowerShell before validating `conda` if initialization changed the profile.
+
+If `conda` is not on `PATH` after installation, locate it under the actual Miniconda install path and report the manual PATH follow-up instead of editing PATH blindly.
 
 Install Visual Studio Community only when missing and explicitly needed. Do not install Visual Studio workloads/packages from this skill; use Visual Studio Installer or a user-provided `.vsconfig` outside this workflow.
 
@@ -151,6 +177,10 @@ Do not install Visual Studio workloads, component packages, or SDK/runtime packs
 git --version
 gh --version
 aws --version
+conda --version
+where.exe conda
+conda info --envs
+conda run -n base python --version
 node -v
 npm -v
 npm list -g --depth=0

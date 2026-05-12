@@ -34,7 +34,7 @@ If the user did not already specify these answers, ask before installing anythin
 1. Which modules should run?
    - `basic`: fonts, Typora, Obsidian, baseline apps.
    - `work`: DingTalk, WeChat, Slack, MailMaster, Termius.
-   - `development`: Git, CLIs, editors, Oh My Posh, npm globals, Visual Studio user extensions.
+   - `development`: Git, CLIs, Python, Miniconda, editors, Oh My Posh, npm globals, Visual Studio user extensions.
    - `drivers`: audit OEM/firmware/hardware drivers; update only missing or abnormal drivers.
    - `all`: run `basic`, `work`, `development`, plus `drivers` in audit-only mode.
    - A specific app name from `software-index.md`, for example `Typora`, `Slack`, `Windows Terminal`, or `Oh My Posh`.

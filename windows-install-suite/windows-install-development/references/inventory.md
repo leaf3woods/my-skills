@@ -31,6 +31,7 @@ codex   D:\nvm4w\nodejs\codex.ps1
 | Git | 2.53.0.3 | `Git.Git` | x64 | `[Drive]:\ProgramFiles\Git` |
 | GitHub CLI | 2.90.0 | `GitHub.cli` | x64 | `[Drive]:\ProgramFiles\GitHubCLI` |
 | AWS CLI v2 | 2.34.33.0 | `Amazon.AWSCLI` | x64 | `[Drive]:\ProgramFiles\AWSCLI` |
+| Miniconda3 managed Python | Resolve latest stable at install time | `Anaconda.Miniconda3` | x64 | `[Drive]:\ProgramFiles\Miniconda3` |
 | PowerShell 7 | 7.6.1.0 | `Microsoft.PowerShell` | x64 | `[Drive]:\ProgramFiles\PowerShell7` |
 | Windows Terminal | 1.24.10921.0 | `Microsoft.WindowsTerminal` | x64/MSIX | System-managed; configure after install |
 | VS Code | 1.119.0 | `Microsoft.VisualStudioCode` | x64 | `[Drive]:\ProgramFiles\VSCode` |
@@ -147,12 +148,28 @@ zhuangtongfa.material-theme@3.19.0
 
 `cursor --list-extensions --show-versions` returned only a Node deprecation warning on this machine. Treat Cursor extension restore as sync/manual unless the user asks to mirror VS Code extensions.
 
+## Python And Miniconda
+
+Install Miniconda3 from `Anaconda.Miniconda3`.
+
+Use Miniconda as the Python provider. Do not install standalone CPython, Microsoft Store Python, or a separate Conda distribution from this skill. Keep Miniconda base auto-activation disabled unless the user asks otherwise.
+
+Validation should confirm Miniconda-managed Python:
+
+```powershell
+conda --version
+where.exe conda
+conda info
+conda run -n base python --version
+```
+
+If plain `python` resolves only to the WindowsApps alias, report it as an alias and continue using Miniconda through `conda run` or activated environments.
+
 ## Missing Or Manual Developer Items
 
 | Item | Observed state | Action |
 | --- | --- | --- |
 | Docker CLI / Docker Desktop | Not found | Install only when container workflows require it |
-| Python | WindowsApps alias only, no usable Python detected | Install real Python only when needed |
 | WSL distro | WSL installed, distro state not captured reliably | Verify with `wsl -l -v` and install a distro if needed |
 | Git identity | Not captured | Configure per user preference |
 | SSH keys and cloud credentials | Not captured | Restore manually and securely |

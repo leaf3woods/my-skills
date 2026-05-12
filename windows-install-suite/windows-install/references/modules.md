@@ -12,7 +12,7 @@ Use these modules for both post-reinstall setup and later partial installs. A se
 | --- | --- | --- | --- |
 | `basic` | `windows-install-basic` | Fonts, Typora, Obsidian, local/pinned basic apps, baseline utilities | Install or verify when selected |
 | `work` | `windows-install-work` | Communication, email, and remote work tools | Install or verify when selected |
-| `development` | `windows-install-development` | Developer CLIs, editors, Oh My Posh, npm globals, Visual Studio user extensions | Install or verify when selected after bootstrap verification |
+| `development` | `windows-install-development` | Developer CLIs, Python, Miniconda, editors, Oh My Posh, npm globals, Visual Studio user extensions | Install or verify when selected after bootstrap verification |
 | `drivers` | `windows-install-drivers` | OEM, firmware, and hardware driver audit | Audit-only by default; update only when missing/abnormal or explicitly approved |
 
 ## Child Skill Locations

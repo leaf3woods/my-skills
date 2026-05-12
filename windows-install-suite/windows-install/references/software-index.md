@@ -44,6 +44,8 @@ Rules:
 | Git | `windows-install-development` | `winget` ID `Git.Git` | Latest stable online |
 | GitHub CLI | `windows-install-development` | `winget` ID `GitHub.cli` | Latest stable online |
 | AWS CLI | `windows-install-development` | `winget` ID `Amazon.AWSCLI` | Latest stable online |
+| Python | `windows-install-development` | `winget` ID `Anaconda.Miniconda3` | Install or verify Miniconda-managed Python; create/use conda environments for requested Python versions |
+| Miniconda | `windows-install-development` | `winget` ID `Anaconda.Miniconda3` | Latest stable online; keep base auto-activation disabled by default |
 | PowerShell 7 | `windows-install-development` | `winget` ID `Microsoft.PowerShell` | Latest stable online |
 | Windows Terminal | `windows-install-development` | `winget` ID `Microsoft.WindowsTerminal` | Latest stable online; configure profiles, FiraCode Nerd Font, acrylic opacity 66, centered launch, default PowerShell profile |
 | VS Code | `windows-install-development` | `winget` ID `Microsoft.VisualStudioCode` | Latest stable online; extensions sync automatically |

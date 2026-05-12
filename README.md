@@ -15,7 +15,7 @@
 | `windows-install-basic` | 安装或核对字体、本地安装包、Typora、Obsidian 和基础应用 | 安装 Typora/Obsidian/字体/基础工具，不包含驱动/固件和微软自带应用 |
 | `windows-install-drivers` | 审计或安装缺失/异常的 OEM、固件、芯片组、显卡、网卡、声卡、存储和显示器驱动 | 设备管理器异常、Dell/OEM 电脑需要驱动扫描，或用户明确要求检查驱动；默认不更新正常驱动 |
 | `windows-install-work` | 安装或核对沟通、邮箱和远程工作工具 | 安装钉钉、微信、Slack、邮箱、Termius 等工作软件 |
-| `windows-install-development` | 安装或核对开发工具链、IDE、Windows Terminal、Oh My Posh、npm 全局包和 Visual Studio 扩展 | 安装 Git、GitHub CLI、AWS CLI、VS Code、Cursor、DBeaver、Bruno、WSL 等开发环境；VS Code 扩展走同步，Visual Studio package 不由 skill 安装 |
+| `windows-install-development` | 安装或核对开发工具链、Python、Miniconda、IDE、Windows Terminal、Oh My Posh、npm 全局包和 Visual Studio 扩展 | 安装 Git、GitHub CLI、AWS CLI、Python、Miniconda、VS Code、Cursor、DBeaver、Bruno、WSL 等开发环境；VS Code 扩展走同步，Visual Studio package 不由 skill 安装 |
 
 ## 目录结构
 
