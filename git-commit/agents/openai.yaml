@@ -1,0 +1,7 @@
+interface:
+  display_name: "Git Commit"
+  short_description: "Create commits with configurable styles"
+  default_prompt: "Use $git-commit to commit the current changes with the default conventional style."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Developer Self-Test Report"
+  short_description: "Generate configurable self-test reports"
+  default_prompt: "Use $developer-self-test-report to generate a company QA handoff self-test report."
+
+policy:
+  allow_implicit_invocation: true

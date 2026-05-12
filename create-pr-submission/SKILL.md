@@ -1,271 +1,113 @@
 ---
 name: create-pr-submission
-description: Generate and optionally submit concise pull requests in English from git commits, branch metadata, ticket information, reviewers, and reusable conversation context.
+description: Generate and optionally submit pull requests from git commits, branch metadata, ticket information, reviewers, and reusable conversation context. Supports company and personal presets, configurable ticket rules, reviewer rules, title formats, and PR body templates. Use when the user asks to prepare, draft, or submit a PR.
 ---
 
-# Skill: Create Pull Request from Git Commits
+# Create PR Submission
 
 ## Purpose
 
-Generate a concise PR title and body for code review and merge decision-making.
+Generate a concise PR title/body and optionally submit the PR.
 
-Use this skill when the user wants to create, prepare, or submit a PR.
-
-It may reuse relevant context from the same conversation.
-
----
+Keep this `SKILL.md` focused on workflow. Load preset and template references only as needed.
 
 ## Inputs
 
-- base_branch: Target merge branch, if known.
-- current_branch: Current branch, auto-detected if not provided.
-- ticket_link: Full ticket link.
-- additional_reviewers: Extra GitHub reviewer usernames or team handles, optional.
-- optional_context: Additional business, implementation, validation, or risk context, optional.
+- `preset`: `company` by default; use `personal` when requested.
+- `template`: default from the selected preset.
+- `base_branch`: target branch, optional.
+- `ticket_link`: full ticket link, optional.
+- `additional_reviewers`: GitHub usernames or team handles, optional.
+- `optional_context`: business, implementation, validation, or risk context, optional.
 
----
+## References
 
-## Sprint Ticket Resolution
+Load in this order:
 
-Branch Naming Convention
+1. [references/presets/company.md](references/presets/company.md) by default, or [references/presets/personal.md](references/presets/personal.md) when requested.
+2. The PR body template named by the preset:
+   - [references/templates/company-pr.md](references/templates/company-pr.md)
+   - [references/templates/personal-pr.md](references/templates/personal-pr.md)
 
-Pattern: `{sprint}/{ticket}-description`
+If the user asks for a one-off format, use the closest preset/template and adapt only the output, not the stored template.
 
-Example: `dss-sprint-49/sds-10871-feature-description`
+## Workflow
 
-- Sprint: `dss-sprint-49` → `DSS-Sprint-49`
-- Ticket: `sds-10871` → `SDS-10871`
-
-1. If a ticket key is found, generate the ticket link:
-
-```text
-https://sprintray.atlassian.net/browse/<TICKET_KEY>
-```
-
-2. Ask the user for the ticket link only if no ticket link exists and no ticket key can be extracted.
-
-Do not search repository files or git history for the ticket link.
-
----
-
-## Base Branch Detection
-
-The base branch is the target branch into which the PR should be merged.
-
-Resolve it using this priority:
-
-1. User-provided base branch.
-2. Reusable conversation context.
-3. Inference using fork point and commit difference comparison.
-4. Ask the user if still uncertain.
-
-Candidate branches should include:
-
-- `origin/staging`
-- `origin/develop`
-
-Never default to `main` or `master`.
-
----
+1. Select preset and template.
+2. Detect current branch.
+3. Resolve ticket metadata from user input, branch name, or selected preset rules.
+4. Resolve base branch using user input first, then selected preset candidates.
+5. Analyze commits first.
+6. Analyze changed files only for scope, CODEOWNERS, or reviewer inference.
+7. Inspect diffs only when commit messages and changed files are insufficient.
+8. Generate PR title using the selected preset title rule.
+9. Generate PR body using the selected template.
+10. Resolve reviewers using selected preset reviewer rules.
+11. Present confirmation summary before submission.
+12. Submit with GitHub CLI only after confirmation, or output title/body/reviewers for manual submission.
 
 ## Git Commands
 
-Only run commands when the needed information is not already available in context.
-
-### Current branch
+Run only the commands needed for missing information.
 
 ```bash
 git branch --show-current
-```
-
-### Fetch latest branch information
-
-```bash
 git fetch --all --prune
-```
-
-### Infer base branch if needed
-
-```bash
-git merge-base --fork-point origin/staging HEAD
-git merge-base --fork-point origin/develop HEAD
-```
-
-Compare divergence if needed:
-
-```bash
-git log --oneline origin/staging..HEAD
-git log --oneline origin/develop..HEAD
-```
-
-### Get commits
-
-```bash
 git log --no-merges --pretty=format:"%h%n%s%n%b%n---" <base_branch>..HEAD
-```
-
-### Get changed files
-
-```bash
 git diff --name-status <base_branch>...HEAD
-```
-
-### Inspect diff only if necessary
-
-Use diff only when commit messages are unclear or insufficient.
-
-```bash
 git diff <base_branch>...HEAD -- <file_path>
 ```
 
-Do not analyze full diff by default.
+Use diff only when commit messages are unclear.
 
----
+## Base Branch Resolution
 
-## PR Title Rule
+Use this priority:
 
-Preferred title format:
+1. User-provided base branch.
+2. Reusable conversation context.
+3. Selected preset base branch candidates.
+4. Ask the user.
 
-```text
-<SPRINT>/<TICKET_KEY> <THE_MOST_RELEVANT_COMMIT_MESSAGE>
-```
+Never default to `main` or `master` unless the selected preset explicitly allows it or the user requests it.
 
-Example:
+## Reviewer Resolution
 
-```text
-RWC-Sprint-56/RWC-3932 fix: fix order status filtering
-```
+Use the selected preset reviewer policy.
 
----
+General rules:
 
-## PR Body Structure
+- User-provided reviewers have highest priority.
+- CODEOWNERS may be used when the preset allows it.
+- Git history candidates may be used only for changed files and only when the preset allows it.
+- Deduplicate reviewers.
+- If required reviewers cannot be submitted, stop and report the failure instead of silently omitting them.
 
-Generate the PR body in this structure:
+## Confirmation Before Submission
 
-```md
-## Ticket
-
-[<TICKET_KEY>](https://sprintray.atlassian.net/browse/<TICKET_KEY>)
-
-## Description
-
-<Required. Briefly explain the problem or requirement and what this PR changes.>
-
-## Changes
-
-- <Reviewer-friendly summary of a key change>
-- <Reviewer-friendly summary of another key change>
-
-## Validation
-
-- <Include only if validation information is available.>
-
-## Impact / Risk
-
-- <Include only if there is useful impact, risk, or reviewer attention point.>
-
----
-
-Submitted by <CURRENT_AGENT>.
-```
-
-Required sections:
-
-- `## Ticket`
-- `## Description`
-- `## Changes`
-
-Optional sections may be omitted when there is no useful content:
-
-- `## Validation`
-- `## Impact / Risk`
-
-Do not add empty or meaningless sections.
-
----
-
-## Current Agent Attribution
-
-End the PR body with:
-
-```text
-Submitted by <CURRENT_AGENT>.
-```
-
-Resolve `<CURRENT_AGENT>` using runtime, user-provided, or obvious host/tool context.
-
-If unavailable, use:
-
-```text
-AI agent
-```
-
----
-
-## Reviewer Rule
-
-Reviewer assignment is required by default.
-
-The PR reviewers must always include these default reviewers:
-
-- `soonsolidshenhuangjiang`
-- `tianmingxiang1031`
-
-Use the first non-empty additional reviewer source in priority order:
-
-1. User-provided additional reviewers
-2. CODEOWNERS matched by changed files
-3. Git history / blame-based candidates from changed files, treat `username` as a high-confidence reviewer candidate
-
-Deduplicate reviewers before submitting the PR.
-
----
-
-## Required Pre-Submission Confirmation
-
-Before running the final PR creation command, present the important submission information to the user and wait for confirmation.
-
-The confirmation summary must include:
+Before running `gh pr create`, present:
 
 - current branch
 - target/base branch
+- preset and template
 - ticket
 - PR title
 - reviewers
-- whether additional inferred reviewers were included
+- inferred reviewer sources, if any
 
-Prefer using an interactive user input or confirmation tool if available.
-
-The confirmation must provide these choices:
-
-1. Confirm and submit PR
-2. Reject and provide corrections
-
-Do not run `gh pr create` until the user confirms.
-
-If the user rejects and provides corrections, update the PR information, show the confirmation summary again, and wait for confirmation again.
-
-If no interactive input tool is available, ask for confirmation directly in chat.
-
----
+Ask for confirmation. Do not submit until the user confirms.
 
 ## Submission
 
-For GitHub CLI:
-
-bash
-
-```
+```bash
 gh pr create --base <base> --head <current> --title "<title>" --body-file <file> --reviewer <reviewers>
 ```
 
-If no supported PR tool, output the title, body, and reviewers for manual submission.
-
----
+If GitHub CLI is unavailable or submission is not requested, output the title, body, and reviewers.
 
 ## Edge Cases
 
-- No commits → report "No code changes", ask user before creating PR.
-- Missing ticket link & branch key → ask user.
-- Base branch uncertain → ask user.
-- GitHub rejects a required reviewer → stop and report error, do not omit.
+- No commits: report `No code changes` and ask before creating a PR.
+- Missing ticket and preset requires ticket: ask the user.
+- Base branch uncertain: ask the user.
+- No reviewers and preset requires reviewers: ask the user or stop before submission.

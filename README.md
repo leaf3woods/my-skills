@@ -8,8 +8,9 @@
 
 | Skill | 用途 | 典型触发场景 |
 | --- | --- | --- |
-| `git-commit` | 分析当前 git diff，按 Conventional Commits 生成提交信息并执行提交 | 用户要求提交代码、创建 commit，或使用 `/commit` |
-| `developer-self-test-report` | 根据分支、提交、变更文件和需求信息生成英文开发自测报告 | 需要给 QA 或测试同事交付 developer self-test report |
+| `git-commit` | 分析当前 git diff，按可配置提交风格生成提交信息并执行提交；默认使用 Conventional Commits | 用户要求提交代码、创建 commit，或使用 `/commit`；也可以指定 simple、ticket-prefix、company 等风格 |
+| `create-pr-submission` | 根据分支、提交、ticket 和模板生成或提交英文 PR；默认使用 company preset，也支持 personal preset | 需要创建 PR、整理 PR 描述、选择 reviewer，或在个人项目中生成轻量 PR |
+| `developer-self-test-report` | 根据分支、提交、变更文件和需求信息生成英文开发自测报告；默认使用 company QA handoff，也支持 smoke、regression、personal 模板 | 需要给 QA 或测试同事交付 developer self-test report，或生成不同粒度的自测说明 |
 | `windows-install` | Windows 软件安装总控，负责安装单个软件、选择模块、协调依赖和排序，再交给子模块执行 | 用户想安装某个软件、补装部分模块，或在重装后一次性安装 basic/work/development/drivers |
 | `windows-install-basic` | 安装或核对字体、本地安装包、Typora、Obsidian 和基础应用 | 安装 Typora/Obsidian/字体/基础工具，不包含驱动/固件和微软自带应用 |
 | `windows-install-drivers` | 审计或安装缺失/异常的 OEM、固件、芯片组、显卡、网卡、声卡、存储和显示器驱动 | 设备管理器异常、Dell/OEM 电脑需要驱动扫描，或用户明确要求检查驱动；默认不更新正常驱动 |
@@ -20,10 +21,23 @@
 
 ```text
 .
+├── create-pr-submission/
+│   ├── SKILL.md
+│   ├── agents/
+│   └── references/
+│       ├── presets/
+│       └── templates/
 ├── developer-self-test-report/
-│   └── SKILL.md
+│   ├── SKILL.md
+│   ├── agents/
+│   └── references/
+│       ├── presets/
+│       └── templates/
 ├── git-commit/
-│   └── SKILL.md
+│   ├── SKILL.md
+│   ├── agents/
+│   └── references/
+│       └── styles/
 ├── windows-install-suite/
 │   ├── windows-install/
 │   │   ├── SKILL.md
@@ -54,7 +68,7 @@
 ```powershell
 $skillsHome = "$env:USERPROFILE\.codex\skills"
 New-Item -ItemType Directory -Force -Path $skillsHome
-Copy-Item -Path .\git-commit, .\developer-self-test-report -Destination $skillsHome -Recurse -Force
+Copy-Item -Path .\git-commit, .\create-pr-submission, .\developer-self-test-report -Destination $skillsHome -Recurse -Force
 ```
 
 如果希望仓库更新后立即生效，可以使用目录链接代替复制：
@@ -63,6 +77,7 @@ Copy-Item -Path .\git-commit, .\developer-self-test-report -Destination $skillsH
 $skillsHome = "$env:USERPROFILE\.codex\skills"
 New-Item -ItemType Directory -Force -Path $skillsHome
 New-Item -ItemType Junction -Path "$skillsHome\git-commit" -Target "$PWD\git-commit"
+New-Item -ItemType Junction -Path "$skillsHome\create-pr-submission" -Target "$PWD\create-pr-submission"
 New-Item -ItemType Junction -Path "$skillsHome\developer-self-test-report" -Target "$PWD\developer-self-test-report"
 ```
 
@@ -86,7 +101,19 @@ New-Item -ItemType Junction -Path "$skillsHome\windows-install-development" -Tar
 ```
 
 ```text
+用 git-commit 使用 simple 风格提交当前修改
+```
+
+```text
+用 create-pr-submission 使用 company preset 生成 PR
+```
+
+```text
 根据当前分支生成 developer self-test report
+```
+
+```text
+用 developer-self-test-report 使用 regression 模板生成自测报告
 ```
 
 ```text
@@ -111,6 +138,7 @@ New-Item -ItemType Junction -Path "$skillsHome\windows-install-development" -Tar
 - `SKILL.md` frontmatter 必须包含 `name` 和 `description`。
 - `description` 要写清楚 skill 的能力和触发场景，因为它是 Codex 判断是否启用 skill 的主要依据。
 - `SKILL.md` 正文只保留执行任务必要的流程、规则和判断依据。
+- 团队和个人差异、reviewer 规则、ticket 规则、输出 section、提交风格等可变内容放到 `references/` 下的 `presets/`、`templates/` 或 `styles/`，`SKILL.md` 只说明默认选择和加载顺序。
 - 复杂资料放到 `references/`，可执行的稳定逻辑放到 `scripts/`，输出模板或素材放到 `assets/`。
 - 不在单个 skill 目录中放 README、安装说明、变更日志等面向人的附加文档，避免增加触发后的上下文噪音。
 - skill 名称使用小写字母、数字和连字符，例如 `developer-self-test-report`。
