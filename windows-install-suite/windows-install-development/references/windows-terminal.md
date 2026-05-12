@@ -1,6 +1,6 @@
 # Windows Terminal Configuration
 
-Configure Windows Terminal after installing PowerShell 7, Oh My Posh, Codex, and npm global AI CLIs.
+Configure Windows Terminal after installing PowerShell 7, Miniconda, Oh My Posh, Codex, and npm global AI CLIs.
 
 ## Icon Source
 
@@ -38,6 +38,7 @@ Use matching icons when present. If no matching icon exists, leave that profile'
 - Acrylic background: enabled.
 - Opacity: `66`.
 - Center on launch: enabled.
+- AI CLI tabs: activate a Conda Python environment before starting the AI CLI.
 - Profile order when profiles exist:
   1. PowerShell 7
   2. Command Prompt
@@ -75,17 +76,34 @@ Command Prompt profile:
 - Keep the existing Command Prompt profile when present.
 - If missing, add `cmd.exe`.
 
+AI profile Conda activation:
+
+- Use `base` unless the user requests another existing Conda environment.
+- Keep global `auto_activate_base` disabled; do not enable it just to support AI tabs.
+- Apply activation only to AI CLI profiles, not to the default PowerShell or Command Prompt profiles.
+- Ensure `conda init powershell` has run before relying on `conda activate` in a profile command line.
+- If `conda` is not available or the selected environment is missing, leave the affected AI profile unchanged and report the follow-up instead of creating an implicit environment.
+
+Use this command shape for AI profiles:
+
+```text
+pwsh.exe -NoExit -Command "conda activate <env>; <ai-command>"
+```
+
 Codex profile:
 
 - Add only when `codex` is available on `PATH`.
-- Command line: `pwsh.exe -NoExit -Command codex`.
+- Command line when Conda is available: `pwsh.exe -NoExit -Command "conda activate base; codex"`.
+- Fallback command line when Conda is unavailable: `pwsh.exe -NoExit -Command codex`.
 - Name: `Codex`.
 
 Other AI CLI profiles:
 
 - Add OpenCode only when `opencode` is available on `PATH`.
-- Command line: `pwsh.exe -NoExit -Command opencode`.
+- Command line when Conda is available: `pwsh.exe -NoExit -Command "conda activate base; opencode"`.
+- Fallback command line when Conda is unavailable: `pwsh.exe -NoExit -Command opencode`.
 - Name: `OpenCode`.
+- Apply the same Conda activation pattern to every other AI CLI profile added by this skill.
 
 Linux distributions:
 
@@ -120,9 +138,11 @@ Use JSON parsing instead of string replacement.
 }
 ```
 
-6. Add or update PowerShell, Codex, and other AI CLI profiles.
-7. Reorder `profiles.list`.
-8. Save JSON with sufficient depth.
+6. Resolve the AI profile Conda environment with `conda info --envs`; default to `base`.
+7. Add or update PowerShell, Codex, and other AI CLI profiles.
+8. For every AI CLI profile, set the command line to activate the selected Conda environment before launching the AI CLI.
+9. Reorder `profiles.list`.
+10. Save JSON with sufficient depth.
 
 ## Supported Manual Step
 
@@ -138,7 +158,8 @@ If there is no reliable supported command on the current OS, report this as a ma
 
 ```powershell
 wt --version
-Get-Command pwsh, codex, opencode -ErrorAction SilentlyContinue
+Get-Command pwsh, conda, codex, opencode -ErrorAction SilentlyContinue
+conda info --envs
 ```
 
 Open Windows Terminal and verify:
@@ -147,6 +168,6 @@ Open Windows Terminal and verify:
 - The default tab is PowerShell.
 - Font uses FiraCode Nerd Font.
 - Acrylic and opacity are visible.
-- Codex profile appears when Codex is available.
-- OpenCode or other AI CLI profiles appear only when available.
+- Codex profile appears when Codex is available and its command line activates the selected Conda environment.
+- OpenCode or other AI CLI profiles appear only when available, and each AI profile activates the selected Conda environment.
 - WSL distributions appear after AI CLI profiles when present.

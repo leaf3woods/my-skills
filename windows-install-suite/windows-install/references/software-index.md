@@ -45,9 +45,9 @@ Rules:
 | GitHub CLI | `windows-install-development` | `winget` ID `GitHub.cli` | Latest stable online |
 | AWS CLI | `windows-install-development` | `winget` ID `Amazon.AWSCLI` | Latest stable online |
 | Python | `windows-install-development` | `winget` ID `Anaconda.Miniconda3` | Install or verify Miniconda-managed Python; create/use conda environments for requested Python versions |
-| Miniconda | `windows-install-development` | `winget` ID `Anaconda.Miniconda3` | Latest stable online; keep base auto-activation disabled by default |
+| Miniconda | `windows-install-development` | `winget` ID `Anaconda.Miniconda3` | Latest stable online; keep global base auto-activation disabled; AI Terminal profiles activate Conda explicitly |
 | PowerShell 7 | `windows-install-development` | `winget` ID `Microsoft.PowerShell` | Latest stable online |
-| Windows Terminal | `windows-install-development` | `winget` ID `Microsoft.WindowsTerminal` | Latest stable online; configure profiles, FiraCode Nerd Font, acrylic opacity 66, centered launch, default PowerShell profile |
+| Windows Terminal | `windows-install-development` | `winget` ID `Microsoft.WindowsTerminal` | Latest stable online; configure profiles, FiraCode Nerd Font, acrylic opacity 66, centered launch, default PowerShell profile, and Conda-activated AI profiles |
 | VS Code | `windows-install-development` | `winget` ID `Microsoft.VisualStudioCode` | Latest stable online; extensions sync automatically |
 | Cursor | `windows-install-development` | `winget` ID `Anysphere.Cursor` | Latest stable online; extensions sync/manual |
 | Bruno | `windows-install-development` | `winget` ID `Bruno.Bruno` | Latest stable online |
@@ -57,7 +57,7 @@ Rules:
 | Angular CLI | `windows-install-development` | npm package `@angular/cli` | Install latest global npm package unless pinned |
 | OpenCode | `windows-install-development` | npm package `opencode-ai` | Install latest global npm package unless pinned |
 | Codex CLI | `windows-install-development` | npm package `@openai/codex` | Bootstrap prerequisite; verify, do not reinstall by default |
-| Windows Terminal Codex profile | `windows-install-development` | Windows Terminal settings | Add profile when `codex` is available; use icon from `references/icons` when provided |
+| Windows Terminal Codex profile | `windows-install-development` | Windows Terminal settings | Add profile when `codex` is available; activate the selected Conda env before launching Codex; use icon from `references/icons` when provided |
 | CSharpier for Visual Studio | `windows-install-development` | Visual Studio Marketplace or local VSIX | Install latest compatible Visual Studio extension |
 | File Icons for Visual Studio | `windows-install-development` | Visual Studio Marketplace or local VSIX | Install latest compatible Visual Studio extension |
 | IndentRainbow for Visual Studio | `windows-install-development` | Visual Studio Marketplace or local VSIX | Install latest compatible Visual Studio extension |

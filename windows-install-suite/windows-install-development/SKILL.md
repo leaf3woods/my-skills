@@ -1,6 +1,6 @@
 ---
 name: windows-install-development
-description: "Install or verify Windows development tools, including developer CLIs, Miniconda-managed Python, editors, Windows Terminal, Oh My Posh, npm global packages, Visual Studio user extensions, API/database tools, and coding agent tools. Use for post-reinstall setup or later partial installs. VS Code extensions sync automatically; Visual Studio workloads/packages are not installed by this skill."
+description: "Install or verify Windows development tools, including developer CLIs, Miniconda-managed Python, editors, Windows Terminal with Conda-activated AI profiles, Oh My Posh, npm global packages, Visual Studio user extensions, API/database tools, and coding agent tools. Use for post-reinstall setup or later partial installs. VS Code extensions sync automatically; Visual Studio workloads/packages are not installed by this skill."
 ---
 
 # Windows Development Installation
@@ -93,7 +93,8 @@ Rules:
 - When the user asks for Python, install or verify Miniconda and use conda environments.
 - Do not install `Python.Python.3.x`, Microsoft Store Python, or the WindowsApps Python alias from this skill.
 - Do not treat Conda as a separate app; use the `conda` command bundled with Miniconda.
-- Keep the base environment from auto-activating by default.
+- Keep the base environment from auto-activating globally.
+- Windows Terminal AI profiles must explicitly activate the selected Conda Python environment before launching the AI CLI. Use `base` unless the user requests another existing Conda environment.
 - Use `conda run -n <env> python ...` or `conda activate <env>` for Python commands.
 - If the user requests a specific Python version, create or update a Miniconda environment with that version.
 - If plain `python` resolves only to WindowsApps, report it as a harmless alias and continue using conda-managed Python.
@@ -132,7 +133,7 @@ if ($profileContent -notmatch [regex]::Escape('oh-my-posh init pwsh')) {
 
 ## Configure Windows Terminal
 
-Read [references/windows-terminal.md](references/windows-terminal.md) after installing PowerShell, Windows Terminal, Codex, npm globals, and Oh My Posh.
+Read [references/windows-terminal.md](references/windows-terminal.md) after installing PowerShell, Windows Terminal, Miniconda, Codex, npm globals, and Oh My Posh.
 
 Configure Windows Terminal to:
 
@@ -144,6 +145,7 @@ Configure Windows Terminal to:
 - Keep profile order as PowerShell, Command Prompt, Codex, other AI CLI profiles, Linux distributions, then the remaining profiles.
 - Add a Codex profile when `codex` is available.
 - Add other AI CLI profiles, such as OpenCode, when the CLI is available.
+- Make every AI CLI profile activate the selected Conda environment before starting the AI command so agent-spawned `python` resolves to Miniconda-managed Python.
 - Copy icons from `references/icons` to the user terminal icon folder and assign them when matching icon files are present.
 
 ## Restore npm Globals
@@ -181,6 +183,7 @@ conda --version
 where.exe conda
 conda info --envs
 conda run -n base python --version
+wt --version
 node -v
 npm -v
 npm list -g --depth=0
@@ -194,6 +197,7 @@ Report:
 
 - Installed developer apps and actual install paths.
 - Packages that ignored `--location` or `--scope machine`.
+- Windows Terminal AI profiles and the Conda environment they activate.
 - VS Code/Cursor extension sync status.
 - Visual Studio user extensions installed or skipped.
 - Visual Studio workloads/packages intentionally not installed.

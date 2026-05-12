@@ -54,6 +54,7 @@ Required defaults:
 - Opacity: 66.
 - Launch: centered.
 - Profile order: PowerShell, Command Prompt, Codex, other AI CLI profiles, Linux distributions, remaining profiles.
+- AI profiles: activate the selected Conda environment, defaulting to `base`, before launching each AI CLI.
 - Icons: copy from `references/icons` when provided.
 
 ## Visual Studio Boundary
@@ -152,7 +153,7 @@ zhuangtongfa.material-theme@3.19.0
 
 Install Miniconda3 from `Anaconda.Miniconda3`.
 
-Use Miniconda as the Python provider. Do not install standalone CPython, Microsoft Store Python, or a separate Conda distribution from this skill. Keep Miniconda base auto-activation disabled unless the user asks otherwise.
+Use Miniconda as the Python provider. Do not install standalone CPython, Microsoft Store Python, or a separate Conda distribution from this skill. Keep Miniconda base auto-activation disabled globally unless the user asks otherwise. Windows Terminal AI profiles should explicitly activate the selected Conda environment, defaulting to `base`, before launching each AI CLI.
 
 Validation should confirm Miniconda-managed Python:
 
