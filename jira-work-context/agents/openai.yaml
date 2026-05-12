@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jira Work Context"
+  short_description: "Use Atlassian CLI for personal Jira work context and comments."
+  default_prompt: "Use Atlassian CLI to find my current Jira work, inspect work item context, and read or write comments."
