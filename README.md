@@ -11,6 +11,7 @@
 | `git-commit` | 分析当前 git diff，按可配置提交风格生成提交信息并执行提交；默认使用 Conventional Commits | 用户要求提交代码、创建 commit，或使用 `/commit`；也可以指定 simple、ticket-prefix、company 等风格 |
 | `create-pr-submission` | 根据分支、提交、ticket 和模板生成或提交英文 PR；默认使用 company preset，也支持 personal preset | 需要创建 PR、整理 PR 描述、选择 reviewer，或在个人项目中生成轻量 PR |
 | `developer-self-test-report` | 根据分支、提交、变更文件和需求信息生成英文开发自测报告；默认使用 company QA handoff，也支持 smoke、regression、personal 模板 | 需要给 QA 或测试同事交付 developer self-test report，或生成不同粒度的自测说明 |
+| `aws-lambda-dev-deploy` | 备份当前 dev Lambda 线上 ZIP，并用默认 AWS 登录身份安全部署单个 staged Lambda 项目 | 用户要求把已完成的 Lambda 改动发布到 dev，或需要先备份线上 Lambda 包再执行 guarded update |
 | `windows-install` | Windows 软件安装总控，负责安装单个软件、选择模块、协调依赖和排序，再交给子模块执行 | 用户想安装某个软件、补装部分模块，或在重装后一次性安装 basic/work/development/drivers |
 | `windows-install-basic` | 安装或核对字体、本地安装包、Typora、Obsidian 和基础应用 | 安装 Typora/Obsidian/字体/基础工具，不包含驱动/固件和微软自带应用 |
 | `windows-install-drivers` | 审计或安装缺失/异常的 OEM、固件、芯片组、显卡、网卡、声卡、存储和显示器驱动 | 设备管理器异常、Dell/OEM 电脑需要驱动扫描，或用户明确要求检查驱动；默认不更新正常驱动 |
@@ -21,6 +22,9 @@
 
 ```text
 .
+├── aws-lambda-dev-deploy/
+│   ├── SKILL.md
+│   └── agents/
 ├── create-pr-submission/
 │   ├── SKILL.md
 │   ├── agents/
@@ -68,7 +72,7 @@
 ```powershell
 $skillsHome = "$env:USERPROFILE\.codex\skills"
 New-Item -ItemType Directory -Force -Path $skillsHome
-Copy-Item -Path .\git-commit, .\create-pr-submission, .\developer-self-test-report -Destination $skillsHome -Recurse -Force
+Copy-Item -Path .\git-commit, .\create-pr-submission, .\developer-self-test-report, .\aws-lambda-dev-deploy -Destination $skillsHome -Recurse -Force
 ```
 
 如果希望仓库更新后立即生效，可以使用目录链接代替复制：
@@ -79,6 +83,7 @@ New-Item -ItemType Directory -Force -Path $skillsHome
 New-Item -ItemType Junction -Path "$skillsHome\git-commit" -Target "$PWD\git-commit"
 New-Item -ItemType Junction -Path "$skillsHome\create-pr-submission" -Target "$PWD\create-pr-submission"
 New-Item -ItemType Junction -Path "$skillsHome\developer-self-test-report" -Target "$PWD\developer-self-test-report"
+New-Item -ItemType Junction -Path "$skillsHome\aws-lambda-dev-deploy" -Target "$PWD\aws-lambda-dev-deploy"
 ```
 
 按需启用 Windows 安装类 skill：
@@ -114,6 +119,10 @@ New-Item -ItemType Junction -Path "$skillsHome\windows-install-development" -Tar
 
 ```text
 用 developer-self-test-report 使用 regression 模板生成自测报告
+```
+
+```text
+用 aws-lambda-dev-deploy 备份线上 Lambda 并部署 staged dev 改动
 ```
 
 ```text

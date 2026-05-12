@@ -1,0 +1,7 @@
+interface:
+  display_name: "AWS Lambda Dev Deploy"
+  short_description: "备份线上 Lambda 包并安全部署 staged dev 代码"
+  default_prompt: "Use $aws-lambda-dev-deploy to back up the live Lambda package and deploy my staged Lambda changes to dev."
+
+policy:
+  allow_implicit_invocation: true
