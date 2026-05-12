@@ -5,9 +5,9 @@ description: >-
   dev target from CI/CD or updateFunction.sh, package existing repository files
   without modifying them, back up live $LATEST, upload only to $LATEST, persist
   deploy-state.json for cross-session resume, pause for user testing, and
-  restore the original package after a passing test. Use when Codex is asked to
-  test Lambda changes in dev, resume an in-progress Lambda test, or run a safe
-  Lambda update/restore flow that must not publish versions, update
+  restore the original package after a passing test. Use when the user asks an
+  AI CLI or agent to test Lambda changes in dev, resume an in-progress Lambda
+  test, or run a safe Lambda update/restore flow that must not publish versions, update
   aliases/tags, use profiles, or deploy staging/production.
 ---
 
