@@ -210,41 +210,14 @@ The PR reviewers must always include these default reviewers:
 
 - `soonsolidshenhuangjiang`
 - `tianmingxiang1031`
-- `soonsolidquanjiaqi`
 
-Additional reviewers may be appended after the default reviewers using this priority:
+Use the first non-empty additional reviewer source in priority order:
 
 1. User-provided additional reviewers
 2. CODEOWNERS matched by changed files
-3. Git history / blame-based candidates from changed files
+3. Git history / blame-based candidates from changed files, treat `username` as a high-confidence reviewer candidate
 
 Deduplicate reviewers before submitting the PR.
-
----
-
-### Git history / blame reviewer inference
-
-Use changed files as the source for reviewer inference.
-
-Prefer CODEOWNERS when available. Otherwise, use git history or blame to identify frequent contributors to changed files.
-
-Useful commands:
-
-```bash
-git ls-files '*CODEOWNERS'
-```
-
-```bash
-git diff --name-only -z <base_branch>...HEAD | xargs -0 -I{} git log --format='%an <%ae>' -- "{}" | sort | uniq -c | sort -nr | head -10
-```
-
-Do not run expensive blame analysis over the entire repository.
-
-The final reviewer list passed to GitHub CLI must use comma-separated handles, for example:
-
-```text
-soonsolidshenhuangjiang,tianmingxiang1031,soonsolidquanjiaqi,<additional_reviewer>
-```
 
 ---
 
