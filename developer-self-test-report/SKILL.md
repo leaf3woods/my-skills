@@ -18,7 +18,8 @@ Keep this `SKILL.md` focused on workflow. Load preset and template references on
 - `base_branch`: base branch, optional.
 - `current_branch`: auto-detected if not provided.
 - `ticket_link`: optional.
-- `optional_context`: business context, verification notes, evidence notes, or risk context, optional.
+- `change_type`: optional hint such as bugfix, feature, refactor, cleanup, config, docs, or test-only.
+- `optional_context`: business context, verification notes, evidence notes, change-type hint, or risk context, optional.
 
 ## References
 
@@ -37,10 +38,11 @@ Load in this order:
 3. Resolve ticket metadata from user input, branch name, or selected preset.
 4. Determine base branch using user input first, then selected preset candidates.
 5. Analyze commits before changed files.
-6. Analyze changed files only for impact scope.
-7. Inspect diffs only when commit messages are unclear or insufficient.
-8. Apply analysis rules from the selected preset.
-9. Generate the report using the selected template.
+6. Determine the change type from user context, branch name, commits, and changed files.
+7. Analyze changed files only for impact scope.
+8. Inspect diffs only when commit messages are unclear or insufficient.
+9. Apply analysis rules from the selected preset.
+10. Generate the report using the selected template.
 
 ## Git Commands
 
@@ -72,6 +74,8 @@ General rules:
 
 - Prefer commit messages over diff.
 - Aggregate commits into business-level changes.
+- Do not assume every self-test report is for a bug fix. Classify the work as bugfix, feature, refactor, cleanup, config, docs, test-only, or mixed when the context supports it.
+- Use change-type-appropriate language: fixes re-test resolved behavior; features verify new behavior; refactors verify preserved behavior and affected flows; config/build changes verify setup or pipeline behavior.
 - Ignore non-functional changes unless they affect behavior.
 - Avoid code-level details unless the selected template asks for them.
 - If the change remains unclear, say so in the report.
@@ -88,6 +92,7 @@ General rules:
 
 - No commits: report `No code changes`.
 - Only formatting/comment changes: report `No functional impact`.
+- Test-only or docs-only changes: report the direct validation performed and avoid implying runtime product behavior changed.
 - Ticket missing and selected preset requires ticket: ask the user.
 - Base branch uncertain: ask the user.
 - High-risk logic: mention focused regression risk.

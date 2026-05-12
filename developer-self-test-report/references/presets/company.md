@@ -40,7 +40,8 @@ Use [../templates/qa-handoff.md](../templates/qa-handoff.md).
 ## Analysis Style
 
 - Use business-level English.
-- Focus on the ticket issue or directly changed behavior.
+- Focus on the ticketed work item and directly changed behavior.
+- Do not assume the ticket is a bug. Describe feature work, refactors, configuration changes, docs-only changes, and test-only changes using their actual change type.
 - By default, set developer self-test result to `Passed`.
 - Evidence is provided separately by the developer as screenshots or videos unless user-provided context says otherwise.
 - Regression suggestions should be concise focus areas, not step-by-step QA instructions.
