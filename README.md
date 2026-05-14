@@ -11,6 +11,7 @@
 | `git-commit` | 分析当前 git diff，按可配置提交风格生成提交信息并执行提交；默认使用 Conventional Commits | 用户要求提交代码、创建 commit，或使用 `/commit`；也可以指定 simple、ticket-prefix、company 等风格 |
 | `create-pr-submission` | 根据分支、提交、ticket 和模板生成或提交英文 PR；默认使用 company preset，也支持 personal preset | 需要创建 PR、整理 PR 描述、选择 reviewer，或在个人项目中生成轻量 PR |
 | `developer-self-test-report` | 根据分支、提交、变更文件和需求信息生成英文开发自测报告；默认使用 company QA handoff，也支持 smoke、regression、personal 模板 | 需要给 QA 或测试同事交付 developer self-test report，或生成不同粒度的自测说明 |
+| `jira-sprint-card-intake` | 获取当前或下一 Jira 冲刺中分配给自己的卡片，生成卡片笔记、checkout 计划、标准跟踪文本、预判工作仓库和增量评论交接 | 开始 Jira 工作流、需要为冲刺卡片建立笔记，或需要把低 token 成本的卡片上下文交给下一个独立 skill |
 | `aws-lambda-dev-deploy` | 只上传到 dev Lambda 的 `$LATEST`，备份原始 ZIP，等待用户测试，通过后还原线上包 | 用户要求在 dev 测试 staged Lambda 改动、避免触碰 alias/tag/staging/production，或需要 guarded update/restore |
 | `windows-install` | Windows 软件安装总控，负责安装单个软件、选择模块、协调依赖和排序，再交给子模块执行 | 用户想安装某个软件、补装部分模块，或在重装后一次性安装 basic/work/development/drivers |
 | `windows-install-basic` | 安装或核对字体、本地安装包、Typora、Obsidian 和基础应用 | 安装 Typora/Obsidian/字体/基础工具，不包含驱动/固件和微软自带应用 |
@@ -42,6 +43,12 @@
 │   ├── agents/
 │   └── references/
 │       └── styles/
+├── jira-workflow-suite/
+│   └── jira-sprint-card-intake/
+│       ├── SKILL.md
+│       ├── agents/
+│       ├── scripts/
+│       └── references/
 ├── windows-install-suite/
 │   ├── windows-install/
 │   │   ├── SKILL.md
@@ -64,6 +71,8 @@
 每个 skill 以独立目录保存，目录名与 `SKILL.md` frontmatter 中的 `name` 保持一致。
 
 `windows-install-suite/` 是仓库内的分组目录，不是单独 skill。启用时仍然要把其中每个 `windows-install*` 子目录分别复制或链接到 Codex skills 目录，让它们可以单独触发。
+
+`jira-workflow-suite/` 同样是分组目录。启用时需要把其中每个 `jira-*` 子目录分别复制或链接到 Codex skills 目录，后续工作流步骤会继续添加为独立 skill。
 
 ## 使用方式
 
@@ -99,6 +108,15 @@ New-Item -ItemType Junction -Path "$skillsHome\windows-install-work" -Target "$s
 New-Item -ItemType Junction -Path "$skillsHome\windows-install-development" -Target "$suite\windows-install-development"
 ```
 
+按需启用 Jira 工作流类 skill：
+
+```powershell
+$skillsHome = "$env:USERPROFILE\.codex\skills"
+$suite = Join-Path $PWD "jira-workflow-suite"
+New-Item -ItemType Directory -Force -Path $skillsHome
+New-Item -ItemType Junction -Path "$skillsHome\jira-sprint-card-intake" -Target "$suite\jira-sprint-card-intake"
+```
+
 安装后，在 Codex 中用自然语言描述任务即可触发对应 skill。例如：
 
 ```text
@@ -119,6 +137,10 @@ New-Item -ItemType Junction -Path "$skillsHome\windows-install-development" -Tar
 
 ```text
 用 developer-self-test-report 使用 regression 模板生成自测报告
+```
+
+```text
+用 jira-sprint-card-intake 获取我当前冲刺的卡片并生成笔记和交接文件
 ```
 
 ```text

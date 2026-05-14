@@ -1,0 +1,4 @@
+interface:
+  display_name: "Jira Sprint Card Intake"
+  short_description: "Collect Jira cards with workflow handoffs"
+  default_prompt: "Use $jira-sprint-card-intake to collect my current Jira sprint cards, create notes, and generate workflow handoff files."
