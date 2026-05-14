@@ -47,7 +47,7 @@ Rules:
 | Python | `windows-install-development` | `winget` ID `Anaconda.Miniconda3` | Install or verify Miniconda-managed Python; create/use conda environments for requested Python versions |
 | Miniconda | `windows-install-development` | `winget` ID `Anaconda.Miniconda3` | Latest stable online; keep global base auto-activation disabled; AI Terminal profiles activate Conda explicitly |
 | PowerShell 7 | `windows-install-development` | `winget` ID `Microsoft.PowerShell` | Latest stable online |
-| Windows Terminal | `windows-install-development` | `winget` ID `Microsoft.WindowsTerminal` | Latest stable online; configure profiles, FiraCode Nerd Font, acrylic opacity 66, centered launch, default PowerShell profile, and Conda-activated AI profiles |
+| Windows Terminal | `windows-install-development` | `winget` ID `Microsoft.WindowsTerminal` | Latest stable online; configure profiles, FiraCode Nerd Font, acrylic opacity 66, centered launch, default PowerShell profile, Conda-activated AI profiles, and `Open Terminal + AI` Explorer context menu |
 | VS Code | `windows-install-development` | `winget` ID `Microsoft.VisualStudioCode` | Latest stable online; extensions sync automatically |
 | Cursor | `windows-install-development` | `winget` ID `Anysphere.Cursor` | Latest stable online; extensions sync/manual |
 | Bruno | `windows-install-development` | `winget` ID `Bruno.Bruno` | Latest stable online |
