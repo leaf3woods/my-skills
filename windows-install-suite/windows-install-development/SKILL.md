@@ -150,6 +150,7 @@ Configure Windows Terminal to:
 - Add a Codex profile when `codex` is available.
 - Add other AI CLI profiles, such as OpenCode, when the CLI is available.
 - Make every AI CLI profile activate the selected Conda environment before starting the AI command so agent-spawned `python` resolves to Miniconda-managed Python.
+- Add a user-level Explorer context menu entry named `Open Terminal + AI` that opens two tabs in the clicked directory: PowerShell first, then the first available AI CLI profile.
 - Copy icons from `references/icons` to the user terminal icon folder and assign them when matching icon files are present.
 
 ## Restore npm Globals
@@ -203,6 +204,7 @@ Report:
 - Installed developer apps and actual install paths.
 - Packages that ignored `--location` or `--scope machine`.
 - Windows Terminal AI profiles and the Conda environment they activate.
+- Windows Terminal Explorer context menu entry status.
 - VS Code/Cursor extension sync status.
 - Visual Studio user extensions installed or skipped.
 - Visual Studio workloads/packages intentionally not installed.

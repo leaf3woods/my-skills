@@ -55,6 +55,7 @@ Required defaults:
 - Launch: centered.
 - Profile order: PowerShell, Command Prompt, Codex, other AI CLI profiles, Linux distributions, remaining profiles.
 - AI profiles: activate the selected Conda environment, defaulting to `base`, before launching each AI CLI.
+- Explorer context menu: add `Open Terminal + AI` to open PowerShell plus the first available AI profile in the clicked directory.
 - Icons: copy from `references/icons` when provided.
 
 ## Visual Studio Boundary
