@@ -1,79 +1,92 @@
 ---
 name: jira-work-context
-description: Use Atlassian CLI (`acli`) for Jira Cloud personal work context and comments. Trigger when the user asks to find or summarize their current Jira work, inspect a Jira work item from a branch or key, read recent Jira comments, add a Jira comment, or update a Jira comment. Focus on context gathering and comment workflows; avoid broad Jira administration, project setup, bulk transitions, or unrelated issue management unless explicitly requested.
+description: 'Use Atlassian CLI (`acli`) as a compact Jira Cloud command guide: authenticate, discover help, search/view work items, inspect projects/boards/sprints/filters, manage comments, and run explicit user-requested Jira CLI actions safely. Use when Codex needs Jira CLI syntax or safe Jira CLI execution. This skill is not a Jira workflow planner; defer team/process workflows to a separate workflow skill.'
 ---
 
-# Jira Work Context
+# Jira CLI
 
-Use `acli` to gather a concise view of the user's Jira work and handle comments. Prefer read-only context gathering first, then comment only when the user explicitly asks to post or update Jira.
+Use this skill for Jira CLI command knowledge and safety boundaries, not team process or ticket workflow decisions.
 
-## Guardrails
+## Boundary
 
-- Verify Jira auth before querying: `acli jira auth status`. If needed, ask the user to authenticate with `acli jira auth login --web` or their preferred token flow.
-- Do not delete comments, transition work items, assign work, edit fields, or bulk-comment via JQL/filter unless the user explicitly asks.
-- Before posting or updating a comment, read the target work item and recent comments so the reply is anchored in current Jira context.
-- Prefer a single `--key` target for comments. Use `--jql` or `--filter` for comments only after confirming the intended batch.
+- Use for `acli jira` syntax, flags, output shaping, command discovery, and safe execution.
+- Do not invent standup/status-report policy, sprint ritual, QA handoff, approval policy, or team workflow. A separate workflow skill owns those choices.
+- Prefer local `--help` over web memory during execution. Official Atlassian ACLI docs can be used when maintaining this skill, but this skill must stay useful without loading web references.
+- Prefer read-only commands until the user explicitly asks to create, update, assign, transition, delete, archive, link, or comment.
+- Before mutations, identify the exact target and action. Prefer `--key` over `--jql` or `--filter`.
+- Treat `--jql`, `--filter`, `--paginate`, `--yes`, `create-bulk`, and any delete/archive/transition/assign/edit operation as batch or destructive risk requiring explicit user confirmation unless the request already names that action and scope.
 
-## Find Current Work
+## Discover Commands
 
-Start from the most specific signal available:
+If the exact syntax is uncertain, run local help instead of relying on memory:
 
-1. If the user provides a key, use it directly.
-2. If working in a repo, inspect branch/commit text for Jira keys like `ABC-123`.
-3. If no key is known, search the user's active or recent work.
+```powershell
+acli jira --help
+acli jira <area> --help
+acli jira workitem <verb> --help
+acli jira workitem comment <verb> --help
+```
 
-Useful commands:
+Verify auth before real queries:
+
+```powershell
+acli jira auth status
+acli jira auth login --help
+```
+
+Prefer `--json` for parsing, `--fields` for small payloads, `--limit` before `--paginate`, and `--web` only when the user wants a browser.
+
+## Command Map
+
+- Root: `auth`, `board`, `dashboard`, `field`, `filter`, `project`, `sprint`, `workitem`.
+- Work item read: `search`, `view`, `comment list`, `attachment list`, `link list`, `link type`, `watcher list`.
+- Work item comment: `comment create`, `comment update`, `comment visibility`; avoid `comment delete` unless explicitly requested.
+- Work item mutation: `create`, `create-bulk`, `edit`, `assign`, `transition`, `clone`, `link create/delete`, `watcher remove`, `attachment delete`, `archive`, `unarchive`, `delete`.
+- Project: `list`, `view`; guarded mutations are `create`, `update`, `archive`, `restore`, `delete`.
+- Board: `search`, `get`, `list-projects`, `list-sprints`; guarded mutations are `create`, `delete`.
+- Sprint: `view`, `list-workitems`; guarded mutations are `create`, `update`, `delete`.
+- Filter: `list`, `search`, `get`, `get-columns`; guarded mutations are `add-favourite`, `update`, `reset-columns`, `change-owner`.
+- Field: `create`, `update`, `delete`, `cancel-delete`; all are guarded admin-style mutations.
+- Dashboard: `search`.
+
+## Read Patterns
+
+```powershell
+acli jira workitem search --jql "assignee = currentUser() AND resolution IS EMPTY ORDER BY updated DESC" --fields "key,summary,status,priority,assignee,updated" --limit 20 --json
+acli jira workitem search --filter 10001 --fields "key,summary,status,assignee" --limit 50 --json
+acli jira workitem view KEY-123 --fields "key,issuetype,summary,status,assignee,reporter,priority,description" --json
+acli jira workitem comment list --key KEY-123 --limit 20 --order "-created" --json
+```
+
+For repo-derived context, extract Jira keys from branch or recent commits first, then view by key:
 
 ```powershell
 git branch --show-current
 git log -5 --oneline
-acli jira workitem search --jql "assignee = currentUser() AND resolution IS EMPTY ORDER BY updated DESC" --fields "key,summary,status,priority,assignee,updated" --limit 20 --json
-acli jira workitem search --jql "(assignee = currentUser() OR reporter = currentUser()) AND updated >= -14d ORDER BY updated DESC" --fields "key,summary,status,priority,assignee,updated" --limit 20 --json
 ```
 
-If the Jira site does not use `resolution`, adapt the JQL with user-supplied project, status, board, sprint, or label constraints instead of broadening the query unnecessarily.
-
-## Inspect Work Item Context
-
-For a likely target, fetch only fields needed for the task:
-
-```powershell
-acli jira workitem view KEY-123 --fields "key,issuetype,summary,status,assignee,reporter,priority,description,comment" --json
-acli jira workitem comment list --key KEY-123 --limit 20 --order "-created" --json
-```
-
-Summarize for the user with: key, title, status, assignee, priority, recent update signal, relevant description details, latest comment thread, blockers, and any clear next action.
-
-## Comment Workflows
-
-Add a short comment:
+## Mutation Patterns
 
 ```powershell
 acli jira workitem comment create --key KEY-123 --body "Comment text" --json
+acli jira workitem comment create --key "KEY-1,KEY-2" --body-file comment.txt --json
+acli jira workitem comment update --key KEY-123 --id 10001 --body-file comment.txt
+acli jira workitem create --project TEAM --type Task --summary "New task" --description "Plain text or ADF" --json
+acli jira workitem edit --key KEY-123 --summary "New summary" --json
+acli jira workitem assign --key KEY-123 --assignee "@me" --json
+acli jira workitem transition --key KEY-123 --status "In Progress" --json
 ```
 
-Add a multiline comment from a file when quoting would be brittle:
+Use generated JSON for complex create/edit payloads:
 
 ```powershell
-acli jira workitem comment create --key KEY-123 --body-file comment.txt --json
+acli jira workitem create --generate-json
+acli jira workitem create --from-json workitem.json
+acli jira workitem edit --generate-json
+acli jira workitem edit --from-json workitem.json
 ```
 
-Update an existing comment only after identifying its ID:
+## Output
 
-```powershell
-acli jira workitem comment list --key KEY-123 --limit 20 --order "-updated" --json
-acli jira workitem comment update --key KEY-123 --id 10001 --body "Updated comment text"
-```
-
-Use Atlassian Document Format only when rich formatting is required:
-
-```powershell
-acli jira workitem comment update --key KEY-123 --id 10001 --body-adf comment.json
-```
-
-## Official References
-
-- `jira auth status/login`: https://developer.atlassian.com/cloud/acli/reference/commands/jira-auth-status/
-- `jira workitem search/view`: https://developer.atlassian.com/cloud/acli/reference/commands/jira-workitem-search/
-- `jira workitem comment list/create/update`: https://developer.atlassian.com/cloud/acli/reference/commands/jira-workitem-comment/
-- JQL `currentUser()`: https://support.atlassian.com/jira-software-cloud/docs/jql-functions/
+- For summaries, report only task-relevant fields: key, summary, status, assignee, priority, update signal, relevant description/comment details, blockers, and likely next command.
+- If a command fails from syntax drift, rerun the relevant `--help`, adjust, and keep the final answer focused on the successful command/output.
