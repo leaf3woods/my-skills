@@ -1,7 +1,7 @@
 interface:
   display_name: "AWS Lambda Dev Deploy"
   short_description: "只测 $LATEST，记录状态并还原"
-  default_prompt: "Use $aws-lambda-dev-deploy to resolve the Lambda target, back up live $LATEST, persist deploy-state.json, upload staged code for testing without changing repo files, and restore the backup after the test passes."
+  default_prompt: "Use $aws-lambda-dev-deploy to resolve the Lambda target from staged paths or the latest commit when nothing is staged, back up live $LATEST, persist deploy-state.json, upload for testing without changing repo files, and restore the backup after the test passes."
 
 policy:
   allow_implicit_invocation: true

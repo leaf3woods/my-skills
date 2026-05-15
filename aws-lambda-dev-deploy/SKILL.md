@@ -1,21 +1,22 @@
 ---
 name: aws-lambda-dev-deploy
 description: >-
-  Guarded AWS Lambda dev-test workflow for one staged Lambda project: resolve a
-  dev target from CI/CD or updateFunction.sh, package existing repository files
+  Guarded AWS Lambda dev-test workflow for one Lambda project selected from
+  staged paths, or from the latest commit when nothing is staged: resolve a dev
+  target from CI/CD or updateFunction.sh, package existing repository files
   without modifying them, back up live $LATEST, upload only to $LATEST, persist
   deploy-state.json for cross-session resume, pause for user testing, and
   restore the original package after a passing test. Use when the user asks an
   AI CLI or agent to test Lambda changes in dev, resume an in-progress Lambda
-  test, or run a safe Lambda update/restore flow that must not publish versions, update
-  aliases/tags, use profiles, or deploy staging/production.
+  test, or run a safe Lambda update/restore flow that must not publish versions,
+  update aliases/tags, use profiles, or deploy staging/production.
 ---
 
 # AWS Lambda Dev Deploy
 
 ## Core Rules
 
-- Work from the repository root and handle exactly one staged Lambda project.
+- Work from the repository root and handle exactly one Lambda project selected from staged paths; if nothing is staged, select it from the latest commit's paths.
 - Stop on any unstaged tracked change or untracked file anywhere in the repository.
 - Do not edit, stage, install, build, generate, format, clean, or otherwise modify repository files.
 - Create only deployment/backup artifacts under `~\.test\<lambda-directory-name>`.
@@ -31,7 +32,8 @@ description: >-
 
 Stop immediately when any of these are true:
 
-- Staged paths do not identify exactly one Lambda root, or any staged path is outside that root.
+- Selection paths do not identify exactly one Lambda root, or they identify more than one Lambda root. Use staged paths when any exist; otherwise use the latest commit's paths.
+- No staged paths exist and the latest commit cannot be read or has no changed paths.
 - Git status has an unstaged worktree status or `??` entry.
 - The target cannot be resolved to exactly one dev function name and AWS region.
 - The target function name or ARN includes an alias/tag/version qualifier instead of the base function.
@@ -56,9 +58,15 @@ Run `git status --porcelain=v1`.
 
 - Stop when column 2 is not a space, or on any `??` entry.
 - Collect staged paths from entries whose index status in column 1 is not a space.
+- If staged paths exist, set `selectionSource` to `staged` and use those paths to infer the target Lambda root.
+- If no staged paths exist, set `selectionSource` to `latest-commit`; run `git rev-parse HEAD` and `git diff-tree --no-commit-id --name-only -r --root HEAD`, then use those latest-commit paths to infer the target Lambda root.
+- Stop if the latest commit cannot be read or returns no changed paths.
 - Infer the Lambda root as the top-level project directory that contains Lambda source/package files, with or without `updateFunction.sh`.
-- Stop if there is not exactly one candidate Lambda root.
-- Record staged files and `git write-tree`; use the tree hash later to detect staged-content drift.
+- Stop if the selection paths identify zero Lambda roots or more than one Lambda root.
+- Ignore non-Lambda repository metadata in the selection paths only when exactly one Lambda root remains clear.
+- Record `selectionSource` and `selectionFiles`.
+- For `staged`, also record staged files and `git write-tree`; use the tree hash later to detect staged-content drift.
+- For `latest-commit`, also record the `HEAD` commit hash; use it later to detect commit drift.
 
 ## 2. Resolve Target
 
@@ -108,7 +116,7 @@ State file rules:
 
 - Write or update `deploy-state.json` after target resolution, after backup verification, after each upload, and after restore.
 - Keep it under the working directory only.
-- Include at least `phase`, `repoRoot`, `lambdaRoot`, `stagedFiles`, `stagedTreeHash`, `functionName`, `region`, `targetSource`, `awsAccount`, `awsArn`, `originalBackupZip`, `originalBackupVerifiedAt`, `originalBackupSha256` when available, `currentLocalZip`, `lastUploadedZip`, `retryCount`, `lastUploadAt`, `lastRestoreAt`, `uploadCommand`, and `restoreCommand`.
+- Include at least `phase`, `repoRoot`, `lambdaRoot`, `selectionSource`, `selectionFiles`, `stagedFiles`, `stagedTreeHash`, `headCommit`, `functionName`, `region`, `targetSource`, `awsAccount`, `awsArn`, `originalBackupZip`, `originalBackupVerifiedAt`, `originalBackupSha256` when available, `currentLocalZip`, `lastUploadedZip`, `retryCount`, `lastUploadAt`, `lastRestoreAt`, `uploadCommand`, and `restoreCommand`.
 - Use phases such as `target-resolved`, `awaiting-upload-confirmation`, `awaiting-test`, `retry-pending`, `restored`, and `canceled`.
 - Never replace `originalBackupZip` during failed-test retries.
 
@@ -133,10 +141,10 @@ On retry uploads after a failed test, create a new local ZIP only. Do not downlo
 
 After the local ZIP and original live backup are verified, stop and show a compact summary:
 
-- Lambda root and staged files.
+- Lambda root, selection source, and selection files.
 - Target function, region, target source, AWS account, and ARN.
 - Lambda readiness result.
-- Staged tree hash.
+- Staged tree hash when `selectionSource` is `staged`, or `HEAD` commit hash when `selectionSource` is `latest-commit`.
 - Local ZIP path and original live backup path.
 - State file path.
 - Initial upload or retry upload.
@@ -151,17 +159,18 @@ Ask for explicit confirmation before uploading. Keep the summary compact; omit Z
 Only after explicit confirmation:
 
 1. Re-check `git status --porcelain=v1`; stop on new unstaged, untracked, or changed staged files.
-2. Re-run `git write-tree`; stop if it differs from the recorded tree hash.
-3. Re-check `aws sts get-caller-identity`; stop if account or ARN differs from the confirmation summary.
-4. Re-check that the original live backup ZIP exists, is nonempty, and is readable.
-5. Upload:
+2. If `selectionSource` is `staged`, re-run `git write-tree`; stop if it differs from the recorded tree hash.
+3. If `selectionSource` is `latest-commit`, stop if any paths are now staged because staged paths take priority; re-run `git rev-parse HEAD` and stop if it differs from the recorded `headCommit`.
+4. Re-check `aws sts get-caller-identity`; stop if account or ARN differs from the confirmation summary.
+5. Re-check that the original live backup ZIP exists, is nonempty, and is readable.
+6. Upload:
 
 ```powershell
 aws lambda update-function-code --function-name <function-name> --region <region> --zip-file fileb://<local-deployment-zip>
 ```
 
-6. Confirm the AWS CLI response reports `Version` = `$LATEST`.
-7. Wait for `$LATEST` and show final status:
+7. Confirm the AWS CLI response reports `Version` = `$LATEST`.
+8. Wait for `$LATEST` and show final status:
 
 ```powershell
 aws lambda wait function-updated --function-name <function-name> --qualifier '$LATEST' --region <region>
