@@ -19,7 +19,7 @@ Required sections:
 - <Reviewer-friendly summary of another key change>
 ```
 
-Optional sections:
+Optional sections
 
 ```md
 ## Validation

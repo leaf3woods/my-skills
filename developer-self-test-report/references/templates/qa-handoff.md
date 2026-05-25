@@ -17,17 +17,25 @@ Use for company QA handoff.
 
 - <Directly affected module, API, page, job, or process>
 
-## 3. Developer Self-Test Result
+## 3. Self-Test Result
 
 - Result: Passed
 - Verification:
   - <One or more checks that match the actual change type: bugfix re-test, feature verification, refactor preserved behavior check, config/build verification, docs/test-only validation, or mixed-change coverage.>
 - Evidence:
   - Screenshot / video will be attached by the developer.
+```
 
-## 4. Regression Suggestions
+Optional sections
 
-- <Concise directly related regression focus area>
+```
+## 4. Test Suggestions
+
+- <Concise directly related, Only include useful.>
+
+## 5. Impact / Risk
+
+- <Only include useful impact, risk, or test attention points.>
 ```
 
 Rules:

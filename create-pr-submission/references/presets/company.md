@@ -58,7 +58,6 @@ Required default reviewers:
 ```text
 soonsolidshenhuangjiang
 tianmingxiang1031
-soonsolidquanjiaqi
 ```
 
 Use the first non-empty additional reviewer source:
