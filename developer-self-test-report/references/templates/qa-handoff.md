@@ -21,7 +21,7 @@ Use for company QA handoff.
 
 - Result: Passed
 - Verification:
-  - <One or more checks that match the actual change type: bugfix re-test, feature verification, refactor preserved behavior check, config/build verification, docs/test-only validation, or mixed-change coverage.>
+  - <Start with one or more checks that prove the changed requirement or behavior is implemented: API endpoint call and observed result, UI/workflow behavior, service/job behavior, bugfix re-test, refactor preserved behavior, config/build behavior, docs/test-only validation, or mixed-change coverage.>
 - Evidence:
   - Screenshot / video will be attached by the developer.
 ```
@@ -42,6 +42,7 @@ Rules:
 
 - Keep this as a developer self-test report, not a QA test plan.
 - Choose verification bullets that match the change type; do not include fix-only statements for features, refactors, config changes, docs-only changes, or test-only changes.
+- For API, UI, service, job, or integration changes, verification should focus on the changed behavior being usable and meeting the requirement. Do not use build success as the primary proof.
 - Do not generate exhaustive test cases.
-- Do not provide step-by-step QA instructions.
-- Mention risk only when directly related.
+- Mention Impact / Risk only when directly related.
+- Mention test suggestions only when user ask to.

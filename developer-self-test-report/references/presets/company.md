@@ -25,8 +25,8 @@ Ask for a ticket link only when no full ticket link exists and no key can be ext
 Use these candidates when the user does not provide a base branch:
 
 ```text
-origin/staging
 origin/develop
+origin/staging
 ```
 
 Prefer the branch with the most reasonable fork point and smallest divergence.
@@ -41,6 +41,7 @@ Use [../templates/qa-handoff.md](../templates/qa-handoff.md).
 
 - Use business-level English.
 - Focus on the ticketed work item and directly changed behavior.
+- Center the report on whether the ticketed requirement or directly changed behavior is implemented and usable; build success is only supporting evidence unless the change itself is build/config/test-only.
 - Do not assume the ticket is a bug. Describe feature work, refactors, configuration changes, docs-only changes, and test-only changes using their actual change type.
 - By default, set developer self-test result to `Passed`.
 - Evidence is provided separately by the developer as screenshots or videos unless user-provided context says otherwise.

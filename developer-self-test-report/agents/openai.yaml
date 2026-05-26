@@ -1,7 +1,7 @@
 interface:
   display_name: "Developer Self-Test Report"
-  short_description: "Generate configurable self-test reports"
-  default_prompt: "Use $developer-self-test-report to generate a company QA handoff self-test report."
+  short_description: "Generate behavior-focused self-test reports"
+  default_prompt: "Use $developer-self-test-report to generate a company QA handoff self-test report focused on whether the changed requirement was implemented and verified."
 
 policy:
   allow_implicit_invocation: true

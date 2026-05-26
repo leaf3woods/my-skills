@@ -1,6 +1,6 @@
 ---
 name: developer-self-test-report
-description: Generate developer self-test reports from git commits, branch changes, branch metadata, ticket information, and optional business context. Supports company and personal presets plus multiple report templates such as QA handoff, smoke, and regression. Use when preparing QA handoff, developer verification notes, or self-test evidence summaries.
+description: Generate developer self-test reports from git commits, branch changes, branch metadata, ticket information, and optional business context. Emphasizes whether the changed requirement, API, workflow, or behavior was actually implemented and verified. Supports company and personal presets plus multiple report templates such as QA handoff, smoke, and regression. Use when preparing QA handoff, developer verification notes, or self-test evidence summaries.
 ---
 
 # Developer Self-Test Report
@@ -19,7 +19,7 @@ Keep this `SKILL.md` focused on workflow. Load preset and template references on
 - `current_branch`: auto-detected if not provided.
 - `ticket_link`: optional.
 - `change_type`: optional hint such as bugfix, feature, refactor, cleanup, config, docs, or test-only.
-- `optional_context`: business context, verification notes, evidence notes, change-type hint, or risk context, optional.
+- `optional_context`: business context, requirement or acceptance notes, verification notes, evidence notes, change-type hint, or risk context, optional.
 
 ## References
 
@@ -39,10 +39,11 @@ Load in this order:
 4. Determine base branch using user input first, then selected preset candidates.
 5. Analyze commits before changed files.
 6. Determine the change type from user context, branch name, commits, and changed files.
-7. Analyze changed files only for impact scope.
-8. Inspect diffs only when commit messages are unclear or insufficient.
-9. Apply analysis rules from the selected preset.
-10. Generate the report using the selected template.
+7. Identify the changed requirement or user-facing behavior that self-test should prove.
+8. Analyze changed files only for impact scope.
+9. Inspect diffs only when commit messages are unclear or insufficient.
+10. Apply analysis rules from the selected preset.
+11. Generate the report using the selected template.
 
 ## Git Commands
 
@@ -76,6 +77,12 @@ General rules:
 - Aggregate commits into business-level changes.
 - Do not assume every self-test report is for a bug fix. Classify the work as bugfix, feature, refactor, cleanup, config, docs, test-only, or mixed when the context supports it.
 - Use change-type-appropriate language: fixes re-test resolved behavior; features verify new behavior; refactors verify preserved behavior and affected flows; config/build changes verify setup or pipeline behavior.
+- Treat self-test as requirement and behavior validation first. Verification bullets must answer what changed, which API/UI/job/workflow was exercised or reviewed, and what expected outcome was observed.
+- For API, UI, service, job, or integration changes, prioritize direct functional verification of the changed behavior and directly modified guardrails such as authorization, validation, success paths, and failure paths.
+- Use build, compile, lint, static analysis, or solution-level test execution as secondary evidence unless the change is build/config/test-only or no runnable environment is available.
+- Do not present build success as proof that an endpoint, feature, or workflow is usable.
+- If functional verification was not actually run, say so explicitly with language such as `API availability test is pending environment validation`; do not write inferred checks as completed verification.
+- Put inferred or recommended checks in test suggestions, not in self-test verification.
 - Ignore non-functional changes unless they affect behavior.
 - Avoid code-level details unless the selected template asks for them.
 - If the change remains unclear, say so in the report.
@@ -85,6 +92,7 @@ General rules:
 - Use English unless the user asks otherwise.
 - Keep the report concise.
 - Do not invent test evidence.
+- In `Self-Test Result`, lead with requirement-level or changed-behavior verification. Put build-only checks after functional checks, or state clearly that only build/static validation was performed.
 - Default result may be `Passed` only when the selected preset/template allows it.
 - Keep self-test output distinct from exhaustive QA test plans.
 
