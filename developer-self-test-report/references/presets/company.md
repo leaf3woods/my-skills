@@ -40,9 +40,12 @@ Use [../templates/qa-handoff.md](../templates/qa-handoff.md).
 
 - Use business-level English.
 - Focus on the ticketed work item and directly changed behavior.
-- Center the report on whether the ticketed requirement, acceptance criteria, or reported bug is implemented and usable.
+- Treat `Self-Test Result` as the developer's own verification of the delivered change, not as a summary of code edits.
+- Center the report on whether the ticketed requirement or directly changed behavior is implemented, usable, and observable at the product, API, service, job, workflow, or integration boundary.
+- In `Verification`, lead with concrete behavior evidence: what surface was exercised, what action or input was used, and what expected outcome was observed.
+- Build success, compile success, lint/static analysis, code review, or "implementation added" statements are only supporting evidence unless the change itself is build/config/test-only.
+- For runtime, API, UI, service, job, or integration changes, do not mark the result as `Passed` from build/static/code-level validation alone. Use `Needs verification` or `Not run` if functional self-test evidence is unavailable.
 - Do not assume the ticket is a bug. Describe feature work, refactors, configuration changes, docs-only changes, and test-only changes using their actual change type.
-- Set the result to `Passed` only when the supplied context contains actual behavior-level verification and its observed outcome. Otherwise use `Needs verification` or `Not run`.
-- Do not include compile, build, lint, static-analysis, dependency-install, or generic test-suite results. For CI/build/config tickets, report the intended pipeline or operational behavior that was observed.
-- Include evidence references only when the user provides or identifies an actual screenshot, video, log excerpt, request/response, or other artifact.
-- Add concise QA focus areas when there is a plausible adjacent regression or risk; do not turn them into step-by-step test cases.
+- By default, set developer self-test result to `Passed` only when the report includes at least one concrete requirement-level or changed-behavior verification, or when build/config/test-only validation is the changed behavior itself.
+- Evidence is provided separately by the developer as screenshots or videos unless user-provided context says otherwise.
+- Regression suggestions should be concise focus areas, not step-by-step QA instructions.

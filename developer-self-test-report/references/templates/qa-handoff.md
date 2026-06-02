@@ -43,6 +43,8 @@ Optional sections
 Rules:
 
 - Keep this as a developer self-test report, not a QA test plan.
+- Treat `Self-Test Result` as the developer's self-test of the actual change, not an implementation summary.
+- Each verification bullet for runtime behavior should name the exercised surface, the action/input, and the observed result.
 - Choose verification bullets that match the change type; do not include fix-only statements for features, refactors, config changes, docs-only changes, or test-only changes.
 - For a bug fix, state the original failing scenario and the observed corrected result. For a feature, map verification to acceptance criteria. For a refactor, identify the preserved user or system behavior actually exercised.
 - For API, UI, service, job, or integration changes, verification must focus on the changed behavior being usable and meeting the requirement.
