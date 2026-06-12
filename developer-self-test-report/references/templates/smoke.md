@@ -11,7 +11,7 @@ Use for lightweight personal or generic verification.
 
 ## Checks
 
-- <Direct behavior or command checked, or "Not run" with reason.>
+- <Requirement or changed behavior exercised and observed result, or "Not run" with reason.>
 
 ## Result
 
@@ -22,4 +22,4 @@ Rules:
 
 - Keep the output short.
 - Do not claim `Passed` unless validation context exists.
-- Prefer concrete commands or user-facing behavior when available.
+- Prefer observable API, UI, workflow, job, integration, or operational behavior over engineering command output.

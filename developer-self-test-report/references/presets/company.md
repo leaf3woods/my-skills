@@ -20,18 +20,17 @@ If no full ticket link is provided but a key is found, generate:
 
 Ask for a ticket link only when no full ticket link exists and no key can be extracted.
 
-## Base Branch Candidates
+## Base Branch Policy
 
-Use these candidates when the user does not provide a base branch:
+Compare against a long-lived development or staging-equivalent branch. Discover and classify remote branches by meaning rather than requiring exact names.
 
-```text
-origin/develop
-origin/staging
-```
+- Development aliases include `dev`, `develop`, `development`, and `integration`.
+- Staging aliases include `stage`, `staging`, `preprod`, `pre-production`, `preproduction`, and `uat`.
+- Reject primary or production-equivalent branches such as `main`, `master`, `trunk`, `prod`, `production`, `live`, and `stable`.
 
-Prefer the branch with the most reasonable fork point and smallest divergence.
+Allow remote namespaces around clear aliases, compare case-insensitively, and ask when a branch such as `release` is ambiguous. Prefer the branch with the most reasonable fork point and smallest divergence.
 
-Never default to `main` or `master`.
+Never compare company work against a primary or production-equivalent branch.
 
 ## Default Template
 
@@ -41,8 +40,9 @@ Use [../templates/qa-handoff.md](../templates/qa-handoff.md).
 
 - Use business-level English.
 - Focus on the ticketed work item and directly changed behavior.
-- Center the report on whether the ticketed requirement or directly changed behavior is implemented and usable; build success is only supporting evidence unless the change itself is build/config/test-only.
+- Center the report on whether the ticketed requirement, acceptance criteria, or reported bug is implemented and usable.
 - Do not assume the ticket is a bug. Describe feature work, refactors, configuration changes, docs-only changes, and test-only changes using their actual change type.
-- By default, set developer self-test result to `Passed`.
-- Evidence is provided separately by the developer as screenshots or videos unless user-provided context says otherwise.
-- Regression suggestions should be concise focus areas, not step-by-step QA instructions.
+- Set the result to `Passed` only when the supplied context contains actual behavior-level verification and its observed outcome. Otherwise use `Needs verification` or `Not run`.
+- Do not include compile, build, lint, static-analysis, dependency-install, or generic test-suite results. For CI/build/config tickets, report the intended pipeline or operational behavior that was observed.
+- Include evidence references only when the user provides or identifies an actual screenshot, video, log excerpt, request/response, or other artifact.
+- Add concise QA focus areas when there is a plausible adjacent regression or risk; do not turn them into step-by-step test cases.

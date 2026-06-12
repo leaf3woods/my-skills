@@ -36,13 +36,13 @@ If the user asks for a one-off format, use the closest preset/template and adapt
 1. Select preset and template.
 2. Detect current branch.
 3. Resolve ticket metadata from user input, branch name, or selected preset rules.
-4. Resolve base branch using user input first, then selected preset candidates.
+4. Resolve and validate the base branch using the selected preset's semantic branch policy.
 5. Analyze commits first.
 6. Analyze changed files only for scope, CODEOWNERS, or reviewer inference.
 7. Inspect diffs only when commit messages and changed files are insufficient.
 8. Generate PR title using the selected preset title rule.
 9. Generate PR body using the selected template.
-10. Resolve reviewers using selected preset reviewer rules.
+10. Resolve reviewers from all applicable sources using selected preset reviewer rules.
 11. Present confirmation summary before submission.
 12. Submit with GitHub CLI only after confirmation, or output title/body/reviewers for manual submission.
 
@@ -52,6 +52,7 @@ Run only the commands needed for missing information.
 
 ```bash
 git branch --show-current
+git branch -r --format="%(refname:short)"
 git fetch --all --prune
 git log --no-merges --pretty=format:"%h%n%s%n%b%n---" <base_branch>..HEAD
 git diff --name-status <base_branch>...HEAD
@@ -66,10 +67,12 @@ Use this priority:
 
 1. User-provided base branch.
 2. Reusable conversation context.
-3. Selected preset base branch candidates.
+3. Discovered remote branches accepted by the selected preset's semantic branch policy.
 4. Ask the user.
 
-Never default to `main` or `master` unless the selected preset explicitly allows it or the user requests it.
+Validate even a user-provided base branch against the selected preset. A company preset may reject primary or production-equivalent branches rather than accepting an explicit but unsafe target.
+
+When a preset defines semantic branch groups, compare normalized names case-insensitively and ignore the remote prefix. Prefer clear long-lived branch aliases; do not classify a feature branch merely because one token resembles `develop` or `staging`. Ask when the meaning is ambiguous.
 
 ## Reviewer Resolution
 
@@ -78,8 +81,12 @@ Use the selected preset reviewer policy.
 General rules:
 
 - User-provided reviewers have highest priority.
+- Required defaults are always retained unless the user explicitly changes the preset policy.
+- Treat reviewer sources as additive unless the preset says otherwise; do not stop after the first source produces a candidate.
 - CODEOWNERS may be used when the preset allows it.
-- Git history candidates may be used only for changed files and only when the preset allows it.
+- Recent merged PR reviewers and git history candidates may be used only for directly changed files or ownership areas and only when the preset allows it.
+- Prefer coverage of each materially different ownership area over adding several reviewers with the same context.
+- Exclude the PR author, bots, duplicates, inactive accounts, and identities that cannot be mapped confidently to a GitHub username or team.
 - Deduplicate reviewers.
 - If required reviewers cannot be submitted, stop and report the failure instead of silently omitting them.
 
@@ -89,7 +96,6 @@ Before running `gh pr create`, present:
 
 - current branch
 - target/base branch
-- preset and template
 - ticket
 - PR title
 - reviewers
@@ -109,5 +115,5 @@ If GitHub CLI is unavailable or submission is not requested, output the title, b
 
 - No commits: report `No code changes` and ask before creating a PR.
 - Missing ticket and preset requires ticket: ask the user.
-- Base branch uncertain: ask the user.
+- Base branch uncertain or rejected by the selected preset: ask the user for an allowed branch.
 - No reviewers and preset requires reviewers: ask the user or stop before submission.

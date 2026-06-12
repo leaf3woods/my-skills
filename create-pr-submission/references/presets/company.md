@@ -18,14 +18,24 @@ Ask for a ticket link only when no full ticket link exists and no ticket key can
 
 Do not search repository files or git history for ticket links.
 
-## Base Branch Candidates
+## Base Branch Policy
 
-Use these candidates when the user does not provide a base branch:
+Company PRs must target a long-lived development or staging-equivalent branch. Discover remote branches and classify them by meaning instead of requiring only two exact names.
 
-```text
-origin/staging
-origin/develop
-```
+Accepted semantic groups include:
+
+- Development: `dev`, `develop`, `development`, `integration`.
+- Staging: `stage`, `staging`, `preprod`, `pre-production`, `preproduction`, `uat`.
+
+Allow a remote namespace such as `origin/`, `upstream/`, or `env/` around a clear alias. Compare case-insensitively and normalize `-`, `_`, and `.` only for alias matching. Treat a branch as a candidate only when it appears to be a long-lived environment/integration branch; do not accept a feature branch just because its description contains one of these words.
+
+Reject primary or production-equivalent branches, including `main`, `master`, `trunk`, `prod`, `production`, `live`, and `stable`. This rejection also applies to user-provided base branches. Do not treat `release` as automatically allowed or rejected because repository conventions vary; ask the user when its role is unclear.
+
+When multiple branches are allowed, prefer:
+
+1. The branch named by the user or reusable context, after validation.
+2. A staging-equivalent branch when the current branch forked from it or the ticket/workflow indicates staging delivery.
+3. A development-equivalent branch otherwise.
 
 Prefer the branch with the most reasonable fork point and smallest divergence.
 
@@ -60,13 +70,16 @@ soonsolidshenhuangjiang
 tianmingxiang1031
 ```
 
-Use the first non-empty additional reviewer source:
+Always include the required default reviewers. Then accumulate relevant additional reviewers from all applicable sources:
 
 1. User-provided additional reviewers.
 2. CODEOWNERS matched by changed files.
-3. Git history candidates from changed files.
+3. Reviewers from recent merged PRs that changed the same primary modules or ownership areas.
+4. Git history candidates from changed files.
 
-When using git history, inspect only changed files. Treat GitHub username evidence as higher confidence than display names or email local-parts.
+Add enough reviewers to cover materially different ownership areas represented by the PR; do not impose a fixed one-reviewer cap. Avoid adding multiple inferred reviewers for the same area when they provide no additional coverage.
+
+When using PR or git history, inspect only directly changed files or their owning modules. Prefer active reviewers with repeated recent involvement. Treat verified GitHub usernames or team handles as higher confidence than display names or email local-parts. Exclude the author, bots, inactive accounts, duplicates, and uncertain identity mappings.
 
 ## Template
 

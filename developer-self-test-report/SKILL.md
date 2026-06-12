@@ -76,15 +76,15 @@ General rules:
 - Prefer commit messages over diff.
 - Aggregate commits into business-level changes.
 - Do not assume every self-test report is for a bug fix. Classify the work as bugfix, feature, refactor, cleanup, config, docs, test-only, or mixed when the context supports it.
-- Use change-type-appropriate language: fixes re-test resolved behavior; features verify new behavior; refactors verify preserved behavior and affected flows; config/build changes verify setup or pipeline behavior.
-- Treat self-test as requirement and behavior validation first. Verification bullets must answer what changed, which API/UI/job/workflow was exercised or reviewed, and what expected outcome was observed.
+- Use change-type-appropriate language: fixes re-test the reported scenario; features verify acceptance criteria; refactors verify preserved behavior and affected flows; configuration changes verify the intended operational behavior.
+- Treat self-test as requirement and behavior validation. Verification bullets must identify the requirement, acceptance criterion, or bug scenario exercised; the action or input; and the observed outcome.
 - For API, UI, service, job, or integration changes, prioritize direct functional verification of the changed behavior and directly modified guardrails such as authorization, validation, success paths, and failure paths.
-- Use build, compile, lint, static analysis, or solution-level test execution as secondary evidence unless the change is build/config/test-only or no runnable environment is available.
-- Do not present build success as proof that an endpoint, feature, or workflow is usable.
+- Do not include build, compile, lint, static-analysis, dependency-install, or generic test-suite results in a company self-test report. These are engineering checks, not evidence that the requirement works for QA handoff.
+- If the work itself changes CI, build, deployment, or configuration behavior, verify and describe the intended pipeline or operational outcome rather than reporting that compilation succeeded.
 - If functional verification was not actually run, say so explicitly with language such as `API availability test is pending environment validation`; do not write inferred checks as completed verification.
 - Put inferred or recommended checks in test suggestions, not in self-test verification.
-- Ignore non-functional changes unless they affect behavior.
-- Avoid code-level details unless the selected template asks for them.
+- Ignore implementation-only details unless they affect behavior, compatibility, rollout, or test scope.
+- Avoid file, class, method, package, and routine refactor details in the report.
 - If the change remains unclear, say so in the report.
 
 ## Output Rules
@@ -92,8 +92,8 @@ General rules:
 - Use English unless the user asks otherwise.
 - Keep the report concise.
 - Do not invent test evidence.
-- In `Self-Test Result`, lead with requirement-level or changed-behavior verification. Put build-only checks after functional checks, or state clearly that only build/static validation was performed.
-- Default result may be `Passed` only when the selected preset/template allows it.
+- In `Self-Test Result`, include only requirement-level or changed-behavior verification relevant to QA handoff.
+- Use `Passed` only when actual behavior-level validation and an observed outcome are available. Otherwise use `Needs verification` or `Not run` with the reason.
 - Keep self-test output distinct from exhaustive QA test plans.
 
 ## Edge Cases
