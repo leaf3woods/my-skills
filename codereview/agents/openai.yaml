@@ -1,0 +1,7 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review diffs for critical code issues"
+  default_prompt: "Use $codereview to review the current PR diff and report only critical issues."
+
+policy:
+  allow_implicit_invocation: true

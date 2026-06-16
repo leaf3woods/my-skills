@@ -10,7 +10,9 @@
 | --- | --- | --- |
 | `git-commit` | 分析当前 git diff，按可配置提交风格生成提交信息并执行提交；默认使用 Conventional Commits | 用户要求提交代码、创建 commit，或使用 `/commit`；也可以指定 simple、ticket-prefix、company 等风格 |
 | `create-pr-submission` | 根据分支、提交、ticket 和模板生成或提交英文 PR；默认使用 company preset，也支持 personal preset | 需要创建 PR、整理 PR 描述、选择 reviewer，或在个人项目中生成轻量 PR |
+| `codereview` | 按公司 Design-Service 规则读取 Jira、CLAUDE.md、changed_files/pr_diff 和完整文件，只输出 critical 级别英文 JSON review comments | 需要 code review、PR review、审查当前变更，或基于 `changed_files.txt` / `pr_diff.txt` 生成严格 JSON 审查结果 |
 | `developer-self-test-report` | 根据分支、提交、变更文件和需求信息生成英文开发自测报告；默认使用 company QA handoff，也支持 smoke、regression、personal 模板 | 需要给 QA 或测试同事交付 developer self-test report，或生成不同粒度的自测说明 |
+| `submit-software-inventory` | 在 Windows、macOS 或 Linux 盘点用户安装的软件，排除系统自带组件、驱动和依赖，并按飞书问卷字段逐条串行提交 | 需要提交公司软件清单、审计电脑安装的软件，或填写禁止并发写入的软件调查问卷 |
 | `jira-sprint-card-intake` | 获取当前或下一 Jira 冲刺中分配给自己的卡片，生成卡片笔记、checkout 计划、标准跟踪文本、预判工作仓库和增量评论交接 | 开始 Jira 工作流、需要为冲刺卡片建立笔记，或需要把低 token 成本的卡片上下文交给下一个独立 skill |
 | `aws-lambda-dev-deploy` | 只上传到 dev Lambda 的 `$LATEST`，备份原始 ZIP，等待用户测试，通过后还原线上包 | 用户要求在 dev 测试 staged Lambda 改动、避免触碰 alias/tag/staging/production，或需要 guarded update/restore |
 | `windows-install` | Windows 软件安装总控，负责安装单个软件、选择模块、协调依赖和排序，再交给子模块执行 | 用户想安装某个软件、补装部分模块，或在重装后一次性安装 basic/work/development/drivers |
@@ -32,6 +34,10 @@
 │   └── references/
 │       ├── presets/
 │       └── templates/
+├── codereview/
+│   ├── SKILL.md
+│   ├── agents/
+│   └── references/
 ├── developer-self-test-report/
 │   ├── SKILL.md
 │   ├── agents/
@@ -43,6 +49,11 @@
 │   ├── agents/
 │   └── references/
 │       └── styles/
+├── submit-software-inventory/
+│   ├── SKILL.md
+│   ├── agents/
+│   ├── scripts/
+│   └── references/
 ├── jira-workflow-suite/
 │   └── jira-sprint-card-intake/
 │       ├── SKILL.md
@@ -81,7 +92,7 @@
 ```powershell
 $skillsHome = "$env:USERPROFILE\.codex\skills"
 New-Item -ItemType Directory -Force -Path $skillsHome
-Copy-Item -Path .\git-commit, .\create-pr-submission, .\developer-self-test-report, .\aws-lambda-dev-deploy -Destination $skillsHome -Recurse -Force
+Copy-Item -Path .\git-commit, .\create-pr-submission, .\codereview, .\developer-self-test-report, .\submit-software-inventory, .\aws-lambda-dev-deploy -Destination $skillsHome -Recurse -Force
 ```
 
 如果希望仓库更新后立即生效，可以使用目录链接代替复制：
@@ -91,7 +102,9 @@ $skillsHome = "$env:USERPROFILE\.codex\skills"
 New-Item -ItemType Directory -Force -Path $skillsHome
 New-Item -ItemType Junction -Path "$skillsHome\git-commit" -Target "$PWD\git-commit"
 New-Item -ItemType Junction -Path "$skillsHome\create-pr-submission" -Target "$PWD\create-pr-submission"
+New-Item -ItemType Junction -Path "$skillsHome\codereview" -Target "$PWD\codereview"
 New-Item -ItemType Junction -Path "$skillsHome\developer-self-test-report" -Target "$PWD\developer-self-test-report"
+New-Item -ItemType Junction -Path "$skillsHome\submit-software-inventory" -Target "$PWD\submit-software-inventory"
 New-Item -ItemType Junction -Path "$skillsHome\aws-lambda-dev-deploy" -Target "$PWD\aws-lambda-dev-deploy"
 ```
 
@@ -132,11 +145,19 @@ New-Item -ItemType Junction -Path "$skillsHome\jira-sprint-card-intake" -Target 
 ```
 
 ```text
+用 codereview 审查当前 PR diff，只输出 critical issues 的 JSON
+```
+
+```text
 根据当前分支生成 developer self-test report
 ```
 
 ```text
 用 developer-self-test-report 使用 regression 模板生成自测报告
+```
+
+```text
+用 submit-software-inventory 盘点这台电脑的软件并串行填写公司飞书问卷
 ```
 
 ```text
