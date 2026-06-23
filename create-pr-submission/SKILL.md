@@ -18,6 +18,7 @@ Keep this `SKILL.md` focused on workflow. Load preset and template references on
 - `base_branch`: target branch, optional.
 - `ticket_link`: full ticket link, optional.
 - `additional_reviewers`: GitHub usernames or team handles, optional.
+- `draft`: default from the selected preset; company defaults to draft.
 - `optional_context`: business, implementation, validation, or risk context, optional.
 
 ## References
@@ -42,9 +43,10 @@ If the user asks for a one-off format, use the closest preset/template and adapt
 7. Inspect diffs only when commit messages and changed files are insufficient.
 8. Generate PR title using the selected preset title rule.
 9. Generate PR body using the selected template.
-10. Resolve reviewers from all applicable sources using selected preset reviewer rules.
-11. Present confirmation summary before submission.
-12. Submit with GitHub CLI only after confirmation, or output title/body/reviewers for manual submission.
+10. Resolve draft mode using the selected preset submission policy.
+11. Resolve reviewers from all applicable sources using selected preset reviewer rules.
+12. Present confirmation summary before submission.
+13. Submit with GitHub CLI only after confirmation, or output title/body/reviewers/draft mode for manual submission.
 
 ## Git Commands
 
@@ -98,6 +100,7 @@ Before running `gh pr create`, present:
 - target/base branch
 - ticket
 - PR title
+- draft mode
 - reviewers
 - inferred reviewer sources, if any
 
@@ -106,10 +109,12 @@ Ask for confirmation. Do not submit until the user confirms.
 ## Submission
 
 ```bash
-gh pr create --base <base> --head <current> --title "<title>" --body-file <file> --reviewer <reviewers>
+gh pr create --base <base> --head <current> --title "<title>" --body-file <file> --reviewer <reviewers> [--draft]
 ```
 
-If GitHub CLI is unavailable or submission is not requested, output the title, body, and reviewers.
+Include `--draft` when the selected preset's submission policy defaults to draft, such as the company preset, unless the user explicitly requests a ready-for-review PR.
+
+If GitHub CLI is unavailable or submission is not requested, output the title, body, reviewers, and draft mode.
 
 ## Edge Cases
 

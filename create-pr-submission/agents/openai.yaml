@@ -1,7 +1,7 @@
 interface:
   display_name: "Create PR Submission"
   short_description: "Draft or submit PRs with configurable templates"
-  default_prompt: "Use $create-pr-submission to draft a PR using the default company preset."
+  default_prompt: "Use $create-pr-submission to prepare a company draft PR using the default company preset."
 
 policy:
   allow_implicit_invocation: true

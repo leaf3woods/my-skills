@@ -81,6 +81,12 @@ Add enough reviewers to cover materially different ownership areas represented b
 
 When using PR or git history, inspect only directly changed files or their owning modules. Prefer active reviewers with repeated recent involvement. Treat verified GitHub usernames or team handles as higher confidence than display names or email local-parts. Exclude the author, bots, inactive accounts, duplicates, and uncertain identity mappings.
 
+## Submission Policy
+
+Company PRs should be submitted as draft by default. Use `gh pr create --draft` when creating the PR unless the user explicitly asks to publish it as ready for review.
+
+Still resolve and include reviewers in the confirmation summary. If GitHub does not request reviewers on draft PR creation in the current environment, create the draft first and report the reviewers that should be added when the PR is marked ready.
+
 ## Template
 
 Default template:
