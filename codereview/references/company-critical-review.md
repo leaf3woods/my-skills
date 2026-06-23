@@ -1,6 +1,6 @@
 # Company Critical Code Review Reference
 
-Use this reference for company PR/code review tasks that should report only critical issues.
+Use this reference for company PR/code review tasks that should report only critical issues. The review is analysis-only: do not edit code, apply patches, or run build/test/lint commands.
 
 ## Project
 
@@ -51,7 +51,15 @@ If dismissed issues are supplied, do not report them again. Skip any issue match
 1. Read `changed_files.txt` to get changed files.
 2. Read `pr_diff.txt` to inspect concrete changes.
 3. For each changed file, read the full file content to understand context.
-4. Identify only critical issues.
+4. Identify only critical issues in the current code.
+5. Provide the current problem and modification plan only. Do not change files or implement fixes.
+
+## Execution Limits
+
+- Do not modify source code, tests, configs, documentation, generated files, or review artifacts.
+- Do not run build, test, lint, format, code generation, dependency installation, migration, or deployment commands.
+- Use read-only inspection only, such as reading files, searching code, and inspecting diffs.
+- Focus on code behavior and runtime risk. Do not use build failures, formatting, style, or generic quality concerns as review findings.
 
 ## Review Focus
 
@@ -112,8 +120,8 @@ Output a valid JSON object in this exact shape. All text must be in English only
       "line": 123,
       "severity": "critical",
       "confidence": 95,
-      "message": "Concise description: 1.What is the issue 2.Why it matters 3.Suggested fix",
-      "code_suggestion": "Optional: corrected code snippet or empty string"
+      "message": "Concise description: 1.What is the issue 2.Why it matters 3.Modification plan",
+      "code_suggestion": "Optional: corrected code snippet or empty string; do not apply it"
     }
   ],
   "summary": {

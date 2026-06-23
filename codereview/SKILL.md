@@ -1,13 +1,13 @@
 ---
 name: codereview
-description: Perform company code reviews for PR diffs and changed files with Design-Service Jira context, CLAUDE.md project rules, and critical-only JSON comments. Use when the user asks for codereview, code review, PR review, review current changes, or generate review comments from changed_files.txt/pr_diff.txt for Angular, C# ASP.NET Core, AWS Lambda, SpecFlow, CDK, or PostgreSQL changes.
+description: Perform analysis-only company code reviews for PR diffs and changed files with Design-Service Jira context, CLAUDE.md project rules, and critical-only JSON comments. Use when the user asks for codereview, code review, PR review, review current changes, or generate review comments from changed_files.txt/pr_diff.txt for Angular, C# ASP.NET Core, AWS Lambda, SpecFlow, CDK, or PostgreSQL changes. This skill reports code problems and modification plans only; it does not edit code or run builds.
 ---
 
 # Codereview
 
 ## Purpose
 
-Review changed code with company rules and report only high-confidence critical issues.
+Review changed code with company rules and report only high-confidence critical issues. Do not modify repository files, run builds, or apply fixes.
 
 ## Reference
 
@@ -22,6 +22,14 @@ Always load [references/company-critical-review.md](references/company-critical-
 
 Ask only when no reliable source of changed files and diff can be found.
 
+## Constraints
+
+- Do not modify source code, generated files, tests, configuration, or documentation in the target repository.
+- Do not run build, test, lint, format, code generation, dependency installation, migration, or deployment commands.
+- Use read-only commands and file reads only to understand the diff and current code.
+- Provide the current code problems and concrete modification plans. Leave implementation to the user unless they explicitly ask for a separate fix task.
+- Focus on code behavior, data flow, security, performance, concurrency, and runtime failure paths instead of build output or formatting.
+
 ## Workflow
 
 1. Load the company critical review reference.
@@ -31,10 +39,11 @@ Ask only when no reliable source of changed files and diff can be found.
 3. Read `jira_ticket.txt` when present. If it contains a ticket ID and `.claude/skills/fetch-jira-context/SKILL.md` exists in the target repository, follow that skill to fetch Jira context.
 4. Read root `CLAUDE.md`, then read `CLAUDE.md` in each top-level directory that contains changed files when it exists.
 5. Read the full current content of every changed file. Use the diff to identify changed lines, but use full files to understand behavior.
-6. Review only for the critical issue categories in the reference.
+6. Review only the code and only for the critical issue categories in the reference.
 7. Do not report style, naming, maintainability, minor cleanup, speculative risk, or nice-to-have suggestions.
 8. Do not re-report dismissed issues that match the same file, line, and concern.
-9. Return exactly the requested JSON object when the user asks for review output. Do not add prose around the JSON.
+9. For each reported issue, include what is wrong, why it matters, and the modification plan or code-level fix direction.
+10. Return exactly the requested JSON object when the user asks for review output. Do not add prose around the JSON.
 
 ## Output
 
