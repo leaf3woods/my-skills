@@ -9,7 +9,7 @@ Generate a concise PR body.
 
 ## Validation
 
-- <How was this checked?>
+- <Requirement, task, acceptance criterion, or bug scenario exercised and the observed result.>
 ```
 
 Optional sections:
@@ -28,4 +28,7 @@ Rules:
 
 - Keep the body short.
 - Omit optional sections when empty.
+- Include `Validation` only for validation that was actually performed. Focus on requirement, task, or bug completion and the observed behavior.
+- Do not include build, compile, lint, static-analysis, dependency-install, or generic test-suite success as PR validation unless the work itself changes that pipeline behavior.
+- Do not infer successful validation from code inspection or diffs. Omit `Validation` when no behavior-level result is available.
 - Do not add organization-specific reviewer, ticket, or footer text unless the user asks.

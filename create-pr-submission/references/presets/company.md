@@ -63,6 +63,8 @@ If sprint is unavailable, use:
 
 Reviewer assignment is required by default.
 
+The required default reviewers are the minimum reviewer set. A request such as "with reviewers", "default reviewers", or "include reviewers" means include at least these accounts; it does not mean only these accounts.
+
 Required default reviewers:
 
 ```text
@@ -70,7 +72,7 @@ soonsolidshenhuangjiang
 tianmingxiang1031
 ```
 
-Always include the required default reviewers. Then accumulate relevant additional reviewers from all applicable sources:
+Always include the required default reviewers. User-provided reviewers add to this default set unless the user explicitly asks to change the preset policy. Then accumulate relevant additional reviewers from all applicable sources:
 
 1. User-provided additional reviewers.
 2. CODEOWNERS matched by changed files.

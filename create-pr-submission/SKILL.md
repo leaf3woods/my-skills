@@ -17,7 +17,7 @@ Keep this `SKILL.md` focused on workflow. Load preset and template references on
 - `template`: default from the selected preset.
 - `base_branch`: target branch, optional.
 - `ticket_link`: full ticket link, optional.
-- `additional_reviewers`: GitHub usernames or team handles, optional.
+- `additional_reviewers`: GitHub usernames or team handles to add to preset-required reviewers, optional.
 - `draft`: default from the selected preset; company defaults to draft.
 - `optional_context`: business, implementation, validation, or risk context, optional.
 
@@ -82,8 +82,8 @@ Use the selected preset reviewer policy.
 
 General rules:
 
-- User-provided reviewers have highest priority.
-- Required defaults are always retained unless the user explicitly changes the preset policy.
+- User-provided reviewers are additive to preset-required reviewers unless the user explicitly changes the preset policy.
+- Required defaults are a minimum reviewer set, not a cap or replacement list. Retain every required default reviewer even when user-provided, CODEOWNERS, or inferred reviewers are also present.
 - Treat reviewer sources as additive unless the preset says otherwise; do not stop after the first source produces a candidate.
 - CODEOWNERS may be used when the preset allows it.
 - Recent merged PR reviewers and git history candidates may be used only for directly changed files or ownership areas and only when the preset allows it.
