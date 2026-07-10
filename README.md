@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | `git-commit` | 分析当前 git diff，按可配置提交风格生成提交信息并执行提交；默认使用 Conventional Commits | 用户要求提交代码、创建 commit，或使用 `/commit`；也可以指定 simple、ticket-prefix、company 等风格 |
 | `create-pr-submission` | 根据分支、提交、ticket 和模板生成或提交英文 PR；默认使用 company preset，也支持 personal preset | 需要创建 PR、整理 PR 描述、选择 reviewer，或在个人项目中生成轻量 PR |
-| `codereview` | 按公司 Design-Service 规则读取 Jira、CLAUDE.md、changed_files/pr_diff 和完整文件，只输出 critical 级别英文 JSON review comments | 需要 code review、PR review、审查当前变更，或基于 `changed_files.txt` / `pr_diff.txt` 生成严格 JSON 审查结果 |
+| `codereview` | 按公司 Design-Service 规则读取 Jira、CLAUDE.md、changed_files/pr_diff 和完整文件，只报告高置信度 critical 问题及修改方案 | 需要 code review、PR review、审查当前变更，或基于 `changed_files.txt` / `pr_diff.txt` 分析关键问题 |
 | `developer-self-test-report` | 根据分支、提交、变更文件和需求信息生成英文开发自测报告；默认使用 company QA handoff，也支持 smoke、regression、personal 模板 | 需要给 QA 或测试同事交付 developer self-test report，或生成不同粒度的自测说明 |
 | `submit-software-inventory` | 在 Windows、macOS 或 Linux 盘点用户安装的软件，排除系统自带组件、驱动和依赖，并按飞书问卷字段逐条串行提交 | 需要提交公司软件清单、审计电脑安装的软件，或填写禁止并发写入的软件调查问卷 |
 | `jira-sprint-card-intake` | 获取当前或下一 Jira 冲刺中分配给自己的卡片，生成卡片笔记、checkout 计划、标准跟踪文本、预判工作仓库和增量评论交接 | 开始 Jira 工作流、需要为冲刺卡片建立笔记，或需要把低 token 成本的卡片上下文交给下一个独立 skill |
@@ -145,7 +145,7 @@ New-Item -ItemType Junction -Path "$skillsHome\jira-sprint-card-intake" -Target 
 ```
 
 ```text
-用 codereview 审查当前 PR diff，只输出 critical issues 的 JSON
+用 codereview 审查当前 PR diff，只报告 critical issues
 ```
 
 ```text

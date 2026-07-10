@@ -23,7 +23,7 @@ Do this before reviewing code:
 2. If the ticket ID is not empty, read `.claude/skills/fetch-jira-context/SKILL.md` in the target repository and follow its instructions to fetch Jira context.
 3. Use fetched requirements, description, and acceptance criteria to inform the review.
 4. If the ticket has linked issues in the fetch output, fetch linked tickets as needed to understand requirements and broader context.
-5. If Jira fetch fails or the ticket is empty, include the full failure reason in `summary.summary`, such as HTTP status, error message, missing environment variables, or empty ticket ID. Continue the review without Jira context.
+5. If Jira fetch fails or the ticket is empty, record the full failure reason, such as HTTP status, error message, missing environment variables, or empty ticket ID. Continue the review without Jira context and mention the limitation in the final response.
 
 ## Project Rules
 
@@ -107,39 +107,3 @@ For `bytebase/**.sql`:
 - Data migrations that cause data loss.
 - Missing `WHERE` clauses on `UPDATE` or `DELETE`.
 - Full table locks on large tables.
-
-## Output Format
-
-Output a valid JSON object in this exact shape. All text must be in English only. Report a maximum of 10 issues. If there are no critical issues, return an empty `comments` array.
-
-```json
-{
-  "comments": [
-    {
-      "path": "relative file path",
-      "line": 123,
-      "severity": "critical",
-      "confidence": 95,
-      "message": "Concise description: 1.What is the issue 2.Why it matters 3.Modification plan",
-      "code_suggestion": "Optional: corrected code snippet or empty string; do not apply it"
-    }
-  ],
-  "summary": {
-    "critical_count": 0,
-    "files_reviewed": ["list of reviewed files"],
-    "key_issues": ["Key issue 1"],
-    "summary": "Overall English summary"
-  }
-}
-```
-
-Strict rules:
-
-1. Output only the JSON object, no other text.
-2. `line` must be a number and must refer to the line in the file, not the diff line.
-3. `path` must be relative to the repository root.
-4. `severity` must always be `critical`.
-5. `confidence` must be an integer from 1 to 100.
-6. Only report issues where confidence is at least 85.
-7. Report at most 10 comments, prioritized by severity and confidence.
-8. All text must be English only.

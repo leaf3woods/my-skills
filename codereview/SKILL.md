@@ -1,6 +1,6 @@
 ---
 name: codereview
-description: Perform analysis-only company code reviews for PR diffs and changed files with Design-Service Jira context, CLAUDE.md project rules, and critical-only JSON comments. Use when the user asks for codereview, code review, PR review, review current changes, or generate review comments from changed_files.txt/pr_diff.txt for Angular, C# ASP.NET Core, AWS Lambda, SpecFlow, CDK, or PostgreSQL changes. This skill reports code problems and modification plans only; it does not edit code or run builds.
+description: Perform analysis-only company code reviews for PR diffs and changed files with Design-Service Jira context, CLAUDE.md project rules, and high-confidence critical findings. Use when the user asks for codereview, code review, PR review, review current changes, or analyze changed_files.txt/pr_diff.txt for Angular, C# ASP.NET Core, AWS Lambda, SpecFlow, CDK, or PostgreSQL changes. This skill reports code problems and concrete modification plans only; it does not edit code or run builds.
 ---
 
 # Codereview
@@ -11,7 +11,7 @@ Review changed code with company rules and report only high-confidence critical 
 
 ## Reference
 
-Always load [references/company-critical-review.md](references/company-critical-review.md) before performing the default company review. Treat it as the canonical severity policy, project context checklist, and JSON output contract.
+Always load [references/company-critical-review.md](references/company-critical-review.md) before performing the default company review. Treat it as the canonical severity policy and project context checklist.
 
 ## Inputs
 
@@ -43,8 +43,10 @@ Ask only when no reliable source of changed files and diff can be found.
 7. Do not report style, naming, maintainability, minor cleanup, speculative risk, or nice-to-have suggestions.
 8. Do not re-report dismissed issues that match the same file, line, and concern.
 9. For each reported issue, include what is wrong, why it matters, and the modification plan or code-level fix direction.
-10. Return exactly the requested JSON object when the user asks for review output. Do not add prose around the JSON.
+10. Present findings in the user's requested language and format. When neither is specified, use concise Markdown ordered by risk and confidence.
 
-## Output
+## Review Response
 
-Use English for all review text. Include at most 10 comments, each with `severity: "critical"` and confidence at least 85. If no critical issues are found, return an empty `comments` array and a summary that notes the reviewed files and any missing Jira context reason.
+- Do not emit machine-oriented JSON unless the user explicitly requests it.
+- For each finding, include the file and current-code line, the problem, its impact, and a concrete modification plan.
+- If no critical issues are found, say so and note the reviewed scope plus any missing Jira or project context that limited the review.
