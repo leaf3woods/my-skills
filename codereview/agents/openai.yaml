@@ -1,7 +1,4 @@
 interface:
   display_name: "Code Review"
-  short_description: "Analyze diffs for critical code issues"
-  default_prompt: "Use $codereview to analyze the current PR diff, report only critical code issues, and do not modify code or run builds."
-
-policy:
-  allow_implicit_invocation: true
+  short_description: "Review local Git changes for critical defects"
+  default_prompt: "Use $codereview to review the current local Git changes for high-confidence critical defects without modifying files or running builds."

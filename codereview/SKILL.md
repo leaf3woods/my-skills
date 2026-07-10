@@ -1,52 +1,47 @@
 ---
 name: codereview
-description: Perform analysis-only company code reviews for PR diffs and changed files with Design-Service Jira context, CLAUDE.md project rules, and high-confidence critical findings. Use when the user asks for codereview, code review, PR review, review current changes, or analyze changed_files.txt/pr_diff.txt for Angular, C# ASP.NET Core, AWS Lambda, SpecFlow, CDK, or PostgreSQL changes. This skill reports code problems and concrete modification plans only; it does not edit code or run builds.
+description: Perform analysis-only reviews of local Git changes and project code, reporting only high-confidence critical defects with concrete fix directions. Use when the user asks for codereview, code review, review current local changes, review staged, unstaged, or untracked files, or inspect a local branch, commit, revision range, or selected source files. This personal-use skill relies only on local Git metadata and project files; it does not edit files or run builds or tests.
 ---
 
 # Codereview
 
 ## Purpose
 
-Review changed code with company rules and report only high-confidence critical issues. Do not modify repository files, run builds, or apply fixes.
+Review local code changes and report only high-confidence critical defects. Analyze only; do not modify the repository, run builds or tests, or apply fixes.
 
 ## Reference
 
-Always load [references/company-critical-review.md](references/company-critical-review.md) before performing the default company review. Treat it as the canonical severity policy and project context checklist.
-
-## Inputs
-
-- Prepared artifacts when present: `changed_files.txt`, `pr_diff.txt`, `jira_ticket.txt`, and a dismissed-issues list.
-- PR context from the user, GitHub, or local git diff when prepared artifacts are absent.
-- Full file contents for every changed file under review.
-- Root `CLAUDE.md`, plus each changed top-level directory's `CLAUDE.md` when present.
-
-Ask only when no reliable source of changed files and diff can be found.
+Always load [references/critical-review-rules.md](references/critical-review-rules.md) before reviewing code. Treat it as the canonical severity threshold and technology-specific review checklist.
 
 ## Constraints
 
+- Treat local Git metadata and local project files as the complete available context; do not look for auxiliary review artifacts or repository-specific instruction files.
+- Do not access remote services or the network.
 - Do not modify source code, generated files, tests, configuration, or documentation in the target repository.
 - Do not run build, test, lint, format, code generation, dependency installation, migration, or deployment commands.
-- Use read-only commands and file reads only to understand the diff and current code.
-- Provide the current code problems and concrete modification plans. Leave implementation to the user unless they explicitly ask for a separate fix task.
-- Focus on code behavior, data flow, security, performance, concurrency, and runtime failure paths instead of build output or formatting.
+- Use read-only Git commands, searches, and file reads to understand the selected changes and current code.
+- Review only defects introduced by or directly exposed by the selected changes; do not report unrelated pre-existing issues.
 
 ## Workflow
 
-1. Load the company critical review reference.
-2. Resolve the changed files and diff:
-   - Prefer `changed_files.txt` and `pr_diff.txt`.
-   - If missing, derive the same information from the user's PR context, GitHub PR data, or local git diff.
-3. Read `jira_ticket.txt` when present. If it contains a ticket ID and `.claude/skills/fetch-jira-context/SKILL.md` exists in the target repository, follow that skill to fetch Jira context.
-4. Read root `CLAUDE.md`, then read `CLAUDE.md` in each top-level directory that contains changed files when it exists.
-5. Read the full current content of every changed file. Use the diff to identify changed lines, but use full files to understand behavior.
-6. Review only the code and only for the critical issue categories in the reference.
-7. Do not report style, naming, maintainability, minor cleanup, speculative risk, or nice-to-have suggestions.
-8. Do not re-report dismissed issues that match the same file, line, and concern.
-9. For each reported issue, include what is wrong, why it matters, and the modification plan or code-level fix direction.
-10. Present findings in the user's requested language and format. When neither is specified, use concise Markdown ordered by risk and confidence.
+1. Load the critical review rules reference.
+2. Run `git rev-parse --show-toplevel` and perform all inspection from the repository root.
+3. Resolve the review scope:
+   - Honor user-specified files, staged state, commits, refs, or revision ranges exactly.
+   - Otherwise inspect all staged, unstaged, and untracked changes reported by local Git.
+   - If the worktree is clean, compare the current branch with an unambiguous locally available base such as `origin/HEAD`, `main`, `master`, or `develop`, excluding the current branch. Do not fetch. Ask for a base or range only when no reliable local base exists.
+4. Collect the selected changes with read-only Git commands:
+   - Use `git diff --cached --find-renames` for staged changes.
+   - Use `git diff --find-renames` for unstaged changes.
+   - Use `git ls-files --others --exclude-standard` for untracked files and treat their full contents as additions.
+   - Use `git diff <base>...HEAD --find-renames`, `git diff <range>`, or `git show <commit>` for an explicitly selected committed scope.
+5. Read the complete source snapshot for every changed file: the index for staged-only review, the worktree for unstaged or untracked review, and the selected revision for committed review. Inspect the previous snapshot for deleted files.
+6. Use local search to inspect callers, types, schemas, and related source files only as needed to prove or disprove a suspected defect.
+7. Apply the reference rules and keep only high-confidence critical findings attributable to the selected changes.
+8. Do not change files or implement fixes during the review.
 
 ## Review Response
 
-- Do not emit machine-oriented JSON unless the user explicitly requests it.
-- For each finding, include the file and current-code line, the problem, its impact, and a concrete modification plan.
-- If no critical issues are found, say so and note the reviewed scope plus any missing Jira or project context that limited the review.
+- Follow the user's requested language and format; otherwise use concise Markdown ordered by impact and confidence.
+- For each finding, include the source path and line, the concrete failure path, its impact, and a code-level fix direction.
+- If no critical issues are found, say so and identify the reviewed local scope.
